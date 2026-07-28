@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -10,4 +5,188 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum AppointmentStatus {
+  BOOKED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+}
+
+enum QueueStatus {
+  WAITING
+  CALLED
+  IN_CONSULTATION
+  COMPLETED
+  SKIPPED
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  password      String
+  phone         String
+  profileImage  String?
+  role          Role
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  patient       Patient?
+  doctor        Doctor?
+  notifications Notification[]
+}
+
+model Department {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+
+  doctors     Doctor[]
+}
+
+model Doctor {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  departmentId      String
+
+  qualification     String
+  specialization    String
+  experienceYears   Int
+  consultationFee   Float
+  isAvailable       Boolean  @default(true)
+
+  user              User       @relation(fields: [userId], references: [id])
+  department        Department @relation(fields: [departmentId], references: [id])
+
+  appointments      Appointment[]
+  queueEntries      QueueEntry[]
+  leaves            DoctorLeave[]
+}
+
+model Patient {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+
+  dateOfBirth   DateTime
+  gender        Gender
+
+  user          User @relation(fields: [userId], references: [id])
+
+  appointments  Appointment[]
+  queueEntries  QueueEntry[]
+}
+
+model Appointment {
+  id                 String   @id @default(cuid())
+
+  patientId          String
+  doctorId           String
+
+  appointmentDate    DateTime
+
+  status             AppointmentStatus @default(BOOKED)
+  paymentStatus      PaymentStatus @default(PENDING)
+
+  notes              String?
+  cancelReason       String?
+
+  patient            Patient @relation(fields: [patientId], references: [id])
+  doctor             Doctor @relation(fields: [doctorId], references: [id])
+
+  payment            Payment?
+  queueEntry         QueueEntry?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+
+  appointmentId   String   @unique
+
+  amount          Float
+
+  status          PaymentStatus @default(PENDING)
+
+  paidAt          DateTime?
+
+  appointment      Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+model QueueEntry {
+  id              String   @id @default(cuid())
+
+  appointmentId   String   @unique
+  patientId       String
+  doctorId        String
+
+  tokenNumber     Int
+
+  status          QueueStatus @default(WAITING)
+
+  checkedInAt     DateTime @default(now())
+
+  appointment     Appointment @relation(fields: [appointmentId], references: [id])
+  patient         Patient @relation(fields: [patientId], references: [id])
+  doctor          Doctor @relation(fields: [doctorId], references: [id])
+
+  @@unique([doctorId, tokenNumber])
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+
+  userId      String
+
+  title       String
+  message     String
+  type        NotificationType
+
+  isRead      Boolean @default(false)
+
+  createdAt   DateTime @default(now())
+
+  user        User @relation(fields: [userId], references: [id])
+}
+
+model DoctorLeave {
+  id          String   @id @default(cuid())
+
+  doctorId    String
+
+  startDate   DateTime
+  endDate     DateTime
+
+  reason      String?
+
+  doctor      Doctor @relation(fields: [doctorId], references: [id])
 }
