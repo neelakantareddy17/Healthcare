@@ -1,12 +1,15 @@
 generator client {
   provider = "prisma-client-js"
- 
 }
 
 datasource db {
   provider = "postgresql"
-  
+  url      = env("DATABASE_URL")
 }
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
 
 enum Role {
   PATIENT
@@ -21,172 +24,202 @@ enum Gender {
 }
 
 enum AppointmentStatus {
-  BOOKED
+  PENDING
+  PAID
   CHECKED_IN
+  IN_PROGRESS
   COMPLETED
   CANCELLED
 }
 
 enum PaymentStatus {
   PENDING
-  PAID
+  SUCCESS
+  FAILED
   REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  UPI
+  WALLET
 }
 
 enum QueueStatus {
   WAITING
-  CALLED
-  IN_CONSULTATION
+  IN_PROGRESS
   COMPLETED
   SKIPPED
 }
 
 enum NotificationType {
-  INFO
-  SUCCESS
-  WARNING
+  APPOINTMENT
+  PAYMENT
+  QUEUE
+  LEAVE
+  GENERAL
 }
 
-model User {
-  id            String   @id @default(cuid())
-  name          String
-  email         String   @unique
-  password      String
-  phone         String
-  profileImage  String?
-  role          Role
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+// ---------------------------------------------------------------------------
+// Models
+// ---------------------------------------------------------------------------
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  role      Role     @default(PATIENT)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   patient       Patient?
   doctor        Doctor?
   notifications Notification[]
+
+  @@map("users")
 }
 
 model Department {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   name        String   @unique
   description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  doctors     Doctor[]
+  doctors Doctor[]
+
+  @@map("departments")
 }
 
 model Doctor {
-  id                String   @id @default(cuid())
-  userId            String   @unique
-  departmentId      String
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  departmentId    String
+  specialization  String
+  experienceYears Int      @default(0)
+  consultationFee Decimal  @db.Decimal(10, 2)
+  qualification   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  qualification     String
-  specialization    String
-  experienceYears   Int
-  consultationFee   Float
-  isAvailable       Boolean  @default(true)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department   Department    @relation(fields: [departmentId], references: [id])
+  appointments Appointment[]
+  leaves       DoctorLeave[]
+  queueEntries QueueEntry[]
 
-  user              User       @relation(fields: [userId], references: [id])
-  department        Department @relation(fields: [departmentId], references: [id])
-
-  appointments      Appointment[]
-  queueEntries      QueueEntry[]
-  leaves            DoctorLeave[]
+  @@index([departmentId])
+  @@map("doctors")
 }
 
 model Patient {
-  id            String   @id @default(cuid())
-  userId        String   @unique
+  id         String    @id @default(uuid())
+  userId     String    @unique
+  dob        DateTime?
+  gender     Gender?
+  address    String?
+  bloodGroup String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
-  dateOfBirth   DateTime
-  gender        Gender
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
 
-  user          User @relation(fields: [userId], references: [id])
-
-  appointments  Appointment[]
-  queueEntries  QueueEntry[]
+  @@map("patients")
 }
 
 model Appointment {
-  id                 String   @id @default(cuid())
+  id              String            @id @default(uuid())
+  patientId       String
+  doctorId        String
+  appointmentDate DateTime          @db.Date
+  timeSlot        String
+  reason          String?
+  status          AppointmentStatus @default(PENDING)
+  checkInCode     String            @unique @default(uuid())
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 
-  patientId          String
-  doctorId           String
+  patient    Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor     Doctor       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  payment    Payment?
+  queueEntry QueueEntry?
 
-  appointmentDate    DateTime
-
-  status             AppointmentStatus @default(BOOKED)
-  paymentStatus      PaymentStatus @default(PENDING)
-
-  notes              String?
-  cancelReason       String?
-
-  patient            Patient @relation(fields: [patientId], references: [id])
-  doctor             Doctor @relation(fields: [doctorId], references: [id])
-
-  payment            Payment?
-  queueEntry         QueueEntry?
-
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  @@index([doctorId, appointmentDate])
+  @@index([patientId])
+  @@map("appointments")
 }
 
 model Payment {
-  id              String   @id @default(cuid())
+  id            String        @id @default(uuid())
+  appointmentId String        @unique
+  amount        Decimal       @db.Decimal(10, 2)
+  status        PaymentStatus @default(PENDING)
+  method        PaymentMethod @default(CARD)
+  transactionId String        @unique @default(uuid())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
-  appointmentId   String   @unique
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
 
-  amount          Float
-
-  status          PaymentStatus @default(PENDING)
-
-  paidAt          DateTime?
-
-  appointment      Appointment @relation(fields: [appointmentId], references: [id])
+  @@map("payments")
 }
 
 model QueueEntry {
-  id              String   @id @default(cuid())
+  id            String      @id @default(uuid())
+  doctorId      String
+  appointmentId String      @unique
+  tokenNumber   Int
+  date          DateTime    @db.Date
+  status        QueueStatus @default(WAITING)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
-  appointmentId   String   @unique
-  patientId       String
-  doctorId        String
+  doctor      Doctor      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
 
-  tokenNumber     Int
-
-  status          QueueStatus @default(WAITING)
-
-  checkedInAt     DateTime @default(now())
-
-  appointment     Appointment @relation(fields: [appointmentId], references: [id])
-  patient         Patient @relation(fields: [patientId], references: [id])
-  doctor          Doctor @relation(fields: [doctorId], references: [id])
-
-  @@unique([doctorId, tokenNumber])
+  @@unique([doctorId, date, tokenNumber])
+  @@index([doctorId, date])
+  @@map("queue_entries")
 }
 
 model Notification {
-  id          String   @id @default(cuid())
+  id        String           @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType @default(GENERAL)
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
 
-  userId      String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  title       String
-  message     String
-  type        NotificationType
-
-  isRead      Boolean @default(false)
-
-  createdAt   DateTime @default(now())
-
-  user        User @relation(fields: [userId], references: [id])
+  @@index([userId])
+  @@map("notifications")
 }
 
 model DoctorLeave {
-  id          String   @id @default(cuid())
+  id        String      @id @default(uuid())
+  doctorId  String
+  startDate DateTime    @db.Date
+  endDate   DateTime    @db.Date
+  reason    String?
+  status    LeaveStatus @default(APPROVED)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
-  doctorId    String
+  doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 
-  startDate   DateTime
-  endDate     DateTime
-
-  reason      String?
-
-  doctor      Doctor @relation(fields: [doctorId], references: [id])
+  @@index([doctorId])
+  @@map("doctor_leaves")
 }

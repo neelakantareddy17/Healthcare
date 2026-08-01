@@ -1,32 +1,45 @@
-import type { Request, Response, NextFunction } from "express";
-import { ZodError } from "zod";
-import { ApiError } from "../utils/ApiError.js";
+import type { NextFunction, Request, Response } from 'express';
+import { Prisma } from '@prisma/client';
+import { ApiError } from '../utils/ApiError.js';
+import { isProduction } from '../config/env.js';
 
-export function errorHandler(
-  err: unknown,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  if (err instanceof ZodError) {
-    return res.status(400).json({
-      success: false,
-      message: "Validation failed",
-      errors: err.issues,
-    });
-  }
+export const notFoundHandler = (req: Request, _res: Response, next: NextFunction) => {
+  next(ApiError.notFound(`Route not found: ${req.method} ${req.originalUrl}`));
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const errorHandler = (err: unknown, req: Request, res: Response, _next: NextFunction) => {
+  let statusCode = 500;
+  let message = 'Internal Server Error';
+  let details: unknown;
 
   if (err instanceof ApiError) {
-    return res.status(err.statusCode).json({
-      success: false,
-      message: err.message,
-    });
+    statusCode = err.statusCode;
+    message = err.message;
+    details = err.details;
+  } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    statusCode = 400;
+    if (err.code === 'P2002') {
+      statusCode = 409;
+      message = `Duplicate value for field(s): ${(err.meta?.target as string[])?.join(', ')}`;
+    } else if (err.code === 'P2025') {
+      statusCode = 404;
+      message = 'Record not found';
+    } else {
+      message = 'Database request error';
+    }
+  } else if (err instanceof Error) {
+    message = err.message;
   }
 
-  console.error(err);
+  if (!isProduction) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+  }
 
-  return res.status(500).json({
+  res.status(statusCode).json({
     success: false,
-    message: "Internal Server Error",
+    message,
+    ...(details ? { details } : {}),
   });
-}
+};

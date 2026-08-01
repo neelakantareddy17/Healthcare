@@ -1,0 +1,379 @@
+{
+  "info": {
+    "name": "Healthcare Backend API",
+    "description": "Complete collection for the Healthcare backend (Node.js + Express + TypeScript + PostgreSQL + Prisma).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "doctorToken", "value": "" },
+    { "key": "departmentId", "value": "" },
+    { "key": "doctorId", "value": "" },
+    { "key": "patientId", "value": "" },
+    { "key": "appointmentId", "value": "" },
+    { "key": "checkInCode", "value": "" },
+    { "key": "queueEntryId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"Passw0rd!\",\n  \"phone\": \"9876543210\",\n  \"gender\": \"MALE\",\n  \"address\": \"12 Main St\",\n  \"bloodGroup\": \"O+\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"Passw0rd!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (Admin - seeded)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@healthcare.com\",\n  \"password\": \"Admin@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "item": [
+        {
+          "name": "Create Department (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{baseUrl}}/departments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cardiology\",\n  \"description\": \"Heart specialists\"\n}"
+            }
+          }
+        },
+        { "name": "Get All Departments", "request": { "method": "GET", "url": "{{baseUrl}}/departments" } },
+        { "name": "Get Department By Id", "request": { "method": "GET", "url": "{{baseUrl}}/departments/{{departmentId}}" } },
+        {
+          "name": "Update Department (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{baseUrl}}/departments/{{departmentId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"description\": \"Updated description\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Department (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/departments/{{departmentId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Doctors",
+      "item": [
+        {
+          "name": "Create Doctor (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{baseUrl}}/doctors",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Alice Ray\",\n  \"email\": \"alice@healthcare.com\",\n  \"password\": \"Doctor@123\",\n  \"departmentId\": \"{{departmentId}}\",\n  \"specialization\": \"Cardiologist\",\n  \"experienceYears\": 10,\n  \"consultationFee\": 800,\n  \"qualification\": \"MBBS, MD\"\n}"
+            }
+          }
+        },
+        { "name": "Get All Doctors", "request": { "method": "GET", "url": "{{baseUrl}}/doctors" } },
+        { "name": "Get Doctor By Id", "request": { "method": "GET", "url": "{{baseUrl}}/doctors/{{doctorId}}" } },
+        {
+          "name": "Update Doctor (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": "{{baseUrl}}/doctors/{{doctorId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"consultationFee\": 900\n}" }
+          }
+        },
+        {
+          "name": "Delete Doctor (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/doctors/{{doctorId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patients",
+      "item": [
+        {
+          "name": "Get All Patients (Admin/Doctor)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/patients"
+          }
+        },
+        {
+          "name": "Get Patient By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/patients/{{patientId}}"
+          }
+        },
+        {
+          "name": "Update Patient (Self)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/patients/{{patientId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"address\": \"New address\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Create Appointment (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/appointments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctorId\": \"{{doctorId}}\",\n  \"appointmentDate\": \"2026-08-10\",\n  \"timeSlot\": \"10:00-10:15\",\n  \"reason\": \"Fever and cough\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Appointments (scoped by role)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/appointments"
+          }
+        },
+        {
+          "name": "Get Appointment By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/appointments/{{appointmentId}}"
+          }
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/appointments/{{appointmentId}}/cancel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments (mocked)",
+      "item": [
+        {
+          "name": "Pay for Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/payments/{{appointmentId}}/pay",
+            "body": { "mode": "raw", "raw": "{\n  \"method\": \"UPI\"\n}" }
+          }
+        },
+        {
+          "name": "Get All Payments (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/payments"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Queue",
+      "item": [
+        {
+          "name": "My Queue (Doctor)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
+            "url": "{{baseUrl}}/queue/my-queue"
+          }
+        },
+        {
+          "name": "Get Doctor Queue by doctorId",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/queue/doctor/{{doctorId}}"
+          }
+        },
+        {
+          "name": "QR Check-In",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/queue/check-in",
+            "body": { "mode": "raw", "raw": "{\n  \"checkInCode\": \"{{checkInCode}}\"\n}" }
+          }
+        },
+        {
+          "name": "Update Queue Status (Doctor)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
+            ],
+            "url": "{{baseUrl}}/queue/{{queueEntryId}}/status",
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"IN_PROGRESS\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get My Notifications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/notifications"
+          }
+        },
+        {
+          "name": "Mark as Read",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/notifications/:id/read"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Doctor Leave",
+      "item": [
+        {
+          "name": "Create Leave (Doctor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
+            ],
+            "url": "{{baseUrl}}/doctor-leaves",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startDate\": \"2026-08-20\",\n  \"endDate\": \"2026-08-22\",\n  \"reason\": \"Personal leave\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Leaves",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
+            "url": "{{baseUrl}}/doctor-leaves"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboards",
+      "item": [
+        {
+          "name": "Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/dashboard/admin"
+          }
+        },
+        {
+          "name": "Doctor Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
+            "url": "{{baseUrl}}/dashboard/doctor"
+          }
+        },
+        {
+          "name": "Patient Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/dashboard/patient"
+          }
+        }
+      ]
+    }
+  ]
+}
