@@ -1,0 +1,42 @@
+.doctor-card {
+  display: flex;
+  gap: 16px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.doctor-card:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1); }
+
+.doctor-card__avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 18px;
+  background: var(--primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.doctor-card__avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.doctor-card__info { flex: 1; min-width: 0; }
+
+.doctor-card__top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; gap: 8px; }
+
+.doctor-card__name { font-size: 16px; font-weight: 700; color: var(--text); }
+
+.doctor-card__specialty { font-size: 14px; color: var(--primary); font-weight: 600; margin-bottom: 4px; }
+
+.doctor-card__hospital { font-size: 13px; color: var(--text-light); margin-bottom: 8px; }
+
+.doctor-card__meta { display: flex; gap: 12px; font-size: 13px; color: var(--text-light); flex-wrap: wrap; }
+
+.doctor-card__fee { color: var(--primary); font-weight: 700; }

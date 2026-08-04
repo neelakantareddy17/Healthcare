@@ -1,0 +1,76 @@
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.doc-profile {
+  text-align: center;
+  background: #fff;
+  border-radius: 24px;
+  padding: 32px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+.doc-profile__avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 28px;
+  background: var(--primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 0 auto 16px;
+}
+.doc-profile__name { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+.doc-profile__specialty { font-size: 16px; color: var(--primary); font-weight: 600; margin-bottom: 12px; }
+
+.doc-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.doc-stat {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px 8px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.doc-stat__num { font-size: 20px; font-weight: 800; color: var(--primary); }
+.doc-stat span:last-child { font-size: 11px; color: var(--text-light); font-weight: 500; }
+
+.doc-info-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.doc-info-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.doc-info-card p { font-size: 14px; color: var(--text-light); line-height: 1.5; }
+
+.ai-reco {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--primary-soft);
+  border-radius: 18px;
+  padding: 16px;
+  margin-top: 12px;
+}
+.ai-reco span:first-child { font-size: 28px; }
+.ai-reco__title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+.ai-reco__text { font-size: 13px; color: var(--text-light); line-height: 1.4; }

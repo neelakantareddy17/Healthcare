@@ -1,0 +1,77 @@
+.home-banner {
+  background: linear-gradient(135deg, #0B6B63, #068072);
+  border-radius: 24px;
+  padding: 24px;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.home-greeting { font-size: 14px; opacity: 0.85; }
+.home-username { font-size: 28px; font-weight: 800; margin: 4px 0; }
+.home-tagline { font-size: 14px; opacity: 0.8; }
+.home-banner__icon { font-size: 56px; }
+
+.ai-insight {
+  display: flex;
+  gap: 14px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  border-left: 4px solid var(--primary);
+}
+.ai-insight__icon { font-size: 28px; }
+.ai-insight__title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+.ai-insight__text { font-size: 14px; color: var(--text-light); line-height: 1.4; }
+
+.section-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 14px; }
+
+.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.quick-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px 8px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: var(--transition);
+}
+.quick-action:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,0.1); }
+.quick-action__icon { font-size: 28px; }
+.quick-action__label { font-size: 11px; font-weight: 600; color: var(--text); text-align: center; }
+
+.live-queue { margin-bottom: 24px; }
+.live-queue-item {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border-left: 4px solid var(--success);
+}
+.live-queue__doctor { font-size: 15px; font-weight: 700; }
+.live-queue__wait { font-size: 13px; color: var(--text-light); }
+.live-queue__token { text-align: right; }
+.live-queue__now { font-size: 13px; color: var(--success); font-weight: 600; }
+.live-queue__yours { font-size: 15px; color: var(--primary); font-weight: 700; }
+
+.home-empty { text-align: center; padding: 30px 0; color: var(--text-light); }
+.home-empty p { font-size: 16px; margin-bottom: 16px; }
+.home-book-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}

@@ -1,0 +1,15 @@
+.mark-all-btn { font-size: 13px; font-weight: 600; color: var(--primary); background: none; border: none; cursor: pointer; }
+
+.notif-card {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: #fff; border-radius: 18px; padding: 16px;
+  margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  position: relative; transition: var(--transition);
+}
+.notif-card--unread { background: var(--primary-soft); }
+.notif-card__icon { font-size: 28px; flex-shrink: 0; }
+.notif-card__body { flex: 1; }
+.notif-card__title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.notif-card__msg { font-size: 13px; color: var(--text-light); line-height: 1.4; margin-bottom: 6px; }
+.notif-card__time { font-size: 11px; color: var(--text-light); }
+.notif-dot { position: absolute; top: 14px; right: 14px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }

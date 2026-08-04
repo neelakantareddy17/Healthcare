@@ -1,0 +1,2 @@
+.patient-layout { min-height: 100vh; background: var(--background); }
+.patient-layout__main { padding: 20px 20px 100px; max-width: 600px; margin: 0 auto; }

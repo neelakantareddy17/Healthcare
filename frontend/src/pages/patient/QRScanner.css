@@ -1,0 +1,28 @@
+.qr-scanner-box {
+  background: #000; border-radius: 24px; padding: 40px 20px;
+  text-align: center; margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.qr-scanner-frame {
+  width: 220px; height: 220px;
+  margin: 0 auto 20px; position: relative;
+}
+.qr-scanner-line {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--primary-light);
+  box-shadow: 0 0 12px var(--primary-light);
+  animation: scanLine 2s linear infinite;
+}
+.qr-corner {
+  position: absolute; width: 28px; height: 28px;
+  border-color: var(--primary-light); border-style: solid; border-width: 0;
+}
+.qr-corner--tl { top: 0; left: 0; border-top-width: 4px; border-left-width: 4px; border-radius: 6px 0 0 0; }
+.qr-corner--tr { top: 0; right: 0; border-top-width: 4px; border-right-width: 4px; border-radius: 0 6px 0 0; }
+.qr-corner--bl { bottom: 0; left: 0; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 6px; }
+.qr-corner--br { bottom: 0; right: 0; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 6px 0; }
+.qr-scanner-hint { color: #fff; font-size: 14px; opacity: 0.8; }
+.qr-scanner-note {
+  background: var(--primary-soft); border-radius: 16px; padding: 16px;
+  font-size: 14px; color: var(--text-light); line-height: 1.5;
+}
+@keyframes scanLine { 0% { top: 0; } 50% { top: calc(100% - 3px); } 100% { top: 0; } }

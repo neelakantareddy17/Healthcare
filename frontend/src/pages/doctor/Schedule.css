@@ -1,0 +1,14 @@
+.sched-days { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 4px; }
+.sched-day { min-width: 56px; padding: 12px 8px; border-radius: 14px; border: 1.5px solid var(--border); background: #fff; font-weight: 600; font-size: 14px; color: var(--text-light); cursor: pointer; transition: var(--transition); }
+.sched-day--active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.sched-section { font-size: 16px; font-weight: 700; margin-bottom: 14px; color: var(--text); }
+.sched-slots { display: flex; flex-direction: column; gap: 10px; }
+.sched-slot {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 18px; border-radius: 14px; font-size: 15px;
+}
+.sched-slot--booked { background: #fee2e2; }
+.sched-slot--free { background: #dcfce7; }
+.sched-slot__time { font-weight: 600; }
+.sched-slot--booked .sched-slot__status { color: #dc2626; font-size: 13px; font-weight: 600; }
+.sched-slot--free .sched-slot__status { color: #15803d; font-size: 13px; font-weight: 600; }
