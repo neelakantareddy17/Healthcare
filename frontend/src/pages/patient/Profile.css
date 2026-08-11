@@ -1,50 +1,219 @@
-.profile-header {
-  background: linear-gradient(135deg, #0B6B63, #068072);
-  border-radius: 24px; padding: 28px 20px;
-  text-align: center; color: #fff; margin-bottom: 16px;
+/* MediQ AI — Patient Profile */
+
+.pf-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 0 24px;
 }
-.profile-avatar {
-  width: 90px; height: 90px;
+
+.pf-avatar-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.pf-avatar {
+  width: 108px;
+  height: 108px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.25);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 32px; font-weight: 800; color: #fff;
-  margin: 0 auto 12px; border: 3px solid rgba(255,255,255,0.4);
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 8px 22px rgba(16, 40, 50, 0.12);
 }
-.profile-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-.profile-email { font-size: 14px; opacity: 0.85; margin-bottom: 4px; }
-.profile-phone { font-size: 14px; opacity: 0.8; }
 
-.profile-stats {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-  margin-bottom: 20px;
+.pf-avatar--placeholder {
+  background: #dfe4e6;
 }
-.profile-stat {
-  background: #fff; border-radius: 16px; padding: 16px 8px;
-  text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  display: flex; flex-direction: column; gap: 4px;
-}
-.profile-stat__num { font-size: 24px; font-weight: 800; color: var(--primary); }
-.profile-stat span:last-child { font-size: 12px; color: var(--text-light); }
 
-.profile-menu { background: #fff; border-radius: 20px; overflow: hidden; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
-.profile-menu-item {
-  width: 100%; display: flex; align-items: center; gap: 14px;
-  padding: 16px 20px; background: none; border: none;
-  border-bottom: 1px solid var(--border); cursor: pointer;
-  transition: var(--transition);
+.pf-verified {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #0d6e64;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.profile-menu-item:last-child { border-bottom: none; }
-.profile-menu-item:hover { background: var(--primary-soft); }
-.profile-menu-item__icon { font-size: 22px; }
-.profile-menu-item__label { flex: 1; font-size: 15px; font-weight: 500; color: var(--text); text-align: left; }
-.profile-menu-item__arrow { font-size: 20px; color: var(--text-light); }
 
-.profile-logout {
-  width: 100%; padding: 16px;
-  border-radius: 16px; background: #fee2e2;
-  color: #dc2626; font-size: 16px; font-weight: 600;
-  border: none; cursor: pointer; transition: var(--transition);
-  margin-bottom: 20px;
+.pf-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #16232b;
+  margin: 0 0 8px;
 }
-.profile-logout:hover { background: #fca5a5; }
+
+.pf-membership {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0d6e64;
+  background: rgba(85, 214, 184, 0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+/* Stats */
+.pf-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 26px;
+}
+
+.pf-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(16, 40, 50, 0.05);
+}
+
+.pf-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pf-stat-icon--rose {
+  background: rgba(214, 69, 90, 0.1);
+  color: #d6455a;
+}
+
+.pf-stat-icon--teal {
+  background: rgba(13, 110, 100, 0.1);
+  color: #0d6e64;
+}
+
+.pf-stat-icon--blue {
+  background: rgba(59, 92, 214, 0.1);
+  color: #3b5cd6;
+}
+
+.pf-stat-label {
+  font-size: 12.5px;
+  color: #8b969c;
+  margin: 0 0 2px;
+}
+
+.pf-stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #16232b;
+  margin: 0;
+}
+
+/* Account details */
+.pf-section-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8b969c;
+  margin: 0 0 12px;
+}
+
+.pf-account-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 4px 18px;
+  margin-bottom: 22px;
+  box-shadow: 0 6px 18px rgba(16, 40, 50, 0.05);
+}
+
+.pf-account-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f0f2f3;
+  padding: 16px 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.pf-account-row:last-child {
+  border-bottom: none;
+}
+
+.pf-account-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(59, 92, 214, 0.08);
+  color: #3b5cd6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pf-account-text {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: #16232b;
+}
+
+.pf-account-chevron {
+  color: #c3cbce;
+  flex-shrink: 0;
+}
+
+/* Logout */
+.pf-logout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid rgba(214, 69, 90, 0.35);
+  color: #d6455a;
+  border-radius: 16px;
+  padding: 15px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.pf-logout:hover {
+  background: rgba(214, 69, 90, 0.06);
+}
+
+/* Floating action button */
+.pf-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 96px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #0d6e64;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px rgba(13, 110, 100, 0.35);
+  cursor: pointer;
+  z-index: 5;
+}
+
+.pf-fab:hover {
+  filter: brightness(1.05);
+}
