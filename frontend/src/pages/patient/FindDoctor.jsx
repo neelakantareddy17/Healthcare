@@ -79,7 +79,7 @@ function FindDoctor() {
 
       <div className="fd-section-head">
         <h3 className="section-title">Specialists</h3>
-        <button type="button" className="fd-viewall" onClick={() => setQuery('')}>View All</button>
+        <button type="button" className="fd-viewall" onClick={() => navigate('/patient/departments')}>View All</button>
       </div>
       <div className="fd-specialties">
         {specialties.map((s) => (

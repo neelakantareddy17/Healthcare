@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
@@ -37,6 +37,7 @@ function Home() {
   const nextAppointment = appointments[0];
   const activeQueue = queue[0];
 
+  const navigate = useNavigate();
   const firstName = user?.name?.split(' ')[0] || 'Patient';
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
@@ -45,6 +46,9 @@ function Home() {
   const quickActions = [
     { to: '/patient/find-doctor', label: 'Book Appointment', variant: 'teal', icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" /><path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+    ) },
+    { to: '/patient/bookings', label: 'My Bookings', variant: 'teal', icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /><path d="M8 10h8M8 14h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
     ) },
     { to: '/patient/medical-records', label: 'Medical Records', variant: 'teal', icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 8a2 2 0 012-2h4l2 2h8a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>
@@ -109,7 +113,13 @@ function Home() {
           </div>
 
           <div className="appt-actions">
-            <button className="appt-checkin" type="button">Check-in</button>
+            <button
+              className="appt-checkin"
+              type="button"
+              onClick={() => navigate('/patient/checkin', { state: { appointment: nextAppointment } })}
+            >
+              Check-in
+            </button>
             <button className="appt-directions" type="button" aria-label="Get directions">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 11l17-8-8 17-2-7-7-2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>
             </button>

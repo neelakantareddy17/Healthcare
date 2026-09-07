@@ -2,45 +2,97 @@
   background: #fff;
   border-radius: 20px;
   padding: 18px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  margin-bottom: 16px;
+  border: 1px solid #eef1f2;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.06);
 }
 
 .appt-card__header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 14px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
-.appt-card__doctor { font-size: 17px; font-weight: 700; color: var(--text); }
-.appt-card__specialty { font-size: 13px; color: var(--primary); font-weight: 600; margin-top: 2px; }
+.appt-card__doctor {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.appt-card__specialty {
+  font-size: 14px;
+  color: #0d6e64;
+  font-weight: 600;
+  margin: 6px 0 0;
+}
 
 .appt-card__info {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .appt-card__info-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 14px;
-  color: var(--text-light);
+  color: #475160;
 }
 
+.appt-card__info-item span:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background: #f3faf8;
+  color: #0d6e64;
+  font-size: 14px;
+}
+
+.appt-card__actions {
+  display: grid;
+  gap: 10px;
+}
+
+.appt-card__checkin,
 .appt-card__cancel {
   width: 100%;
-  padding: 10px;
-  border-radius: 12px;
-  background: #fee2e2;
-  color: #dc2626;
+  padding: 12px;
+  border-radius: 14px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
   cursor: pointer;
   transition: var(--transition);
 }
-.appt-card__cancel:hover { background: #fca5a5; }
+
+.appt-card__checkin {
+  background: #0d6e64;
+  color: #fff;
+}
+
+.appt-card__checkin:hover {
+  background: #0b5a53;
+}
+
+.appt-card__cancel {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.appt-card__cancel:hover {
+  background: #fee2e2;
+}
+
+@media (max-width: 520px) {
+  .appt-card__info {
+    grid-template-columns: 1fr;
+  }
+}
