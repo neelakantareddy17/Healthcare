@@ -6,22 +6,40 @@ import * as paymentService from '../services/payment.service.js';
 import * as appointmentService from '../services/appointment.service.js';
 
 export const payForAppointment = asyncHandler(async (req: Request, res: Response) => {
-  const appointment = await appointmentService.getAppointmentById(req.params.appointmentId);
+  const appointmentId = req.params.appointmentId;
+
+  if (!appointmentId) {
+    throw ApiError.badRequest('Appointment ID is required');
+  }
+
+  const appointment = await appointmentService.getAppointmentById(appointmentId);
 
   if (req.user!.role === 'PATIENT' && appointment.patient.userId !== req.user!.userId) {
     throw ApiError.forbidden('You can only pay for your own appointments');
   }
 
-  const result = await paymentService.payForAppointment(req.params.appointmentId, req.body.method);
-  return ApiResponse.ok(res, 'Payment successful, token generated', result);
+  const result = await paymentService.payForAppointment(
+    appointmentId,
+    req.body.method,
+  );
+
+  return ApiResponse.ok(res, 'Payment successful, appointment confirmed', result);
 });
 
 export const getPaymentById = asyncHandler(async (req: Request, res: Response) => {
-  const payment = await paymentService.getPaymentById(req.params.id);
+  const id = req.params.id;
+
+  if (!id) {
+    throw ApiError.badRequest('Payment ID is required');
+  }
+
+  const payment = await paymentService.getPaymentById(id);
+
   return ApiResponse.ok(res, 'Payment fetched', payment);
 });
 
 export const getAllPayments = asyncHandler(async (_req: Request, res: Response) => {
   const payments = await paymentService.getAllPayments();
+
   return ApiResponse.ok(res, 'Payments fetched', payments);
 });

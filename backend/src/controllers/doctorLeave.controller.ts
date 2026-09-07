@@ -3,6 +3,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import * as leaveService from '../services/doctorLeave.service.js';
 import * as doctorService from '../services/doctor.service.js';
+import { ApiError } from '../utils/ApiError.js';
 
 export const createLeave = asyncHandler(async (req: Request, res: Response) => {
   const doctor = await doctorService.getDoctorByUserId(req.user!.userId);
@@ -26,7 +27,13 @@ export const getLeaves = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getLeaveById = asyncHandler(async (req: Request, res: Response) => {
-  const leave = await leaveService.getLeaveById(req.params.id);
+ const { id } = req.params;
+
+if (!id) {
+  throw ApiError.badRequest('Leave ID is required');
+}
+
+const leave = await leaveService.getLeaveById(id);
   return ApiResponse.ok(res, 'Leave fetched', leave);
 });
 
@@ -37,6 +44,16 @@ export const deleteLeave = asyncHandler(async (req: Request, res: Response) => {
     const doctor = await doctorService.getDoctorByUserId(req.user!.userId);
     doctorId = doctor.id;
   }
-  const result = await leaveService.deleteLeave(req.params.id, doctorId, isAdmin);
+const { id } = req.params;
+
+if (!id) {
+  throw ApiError.badRequest('Leave ID is required');
+}
+
+const result = await leaveService.deleteLeave(
+  id,
+  doctorId,
+  isAdmin,
+);
   return ApiResponse.ok(res, result.message);
 });

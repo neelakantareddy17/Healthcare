@@ -1,7 +1,7 @@
 import { prisma } from '../config/db.js';
 import { ApiError } from '../utils/ApiError.js';
 import { generateQrCodeDataUrl } from '../utils/qrcode.js';
-import { createQueueEntryForAppointment } from './queue.service.js';
+
 import { createNotification } from './notification.service.js';
 import type { PaymentMethod } from '@prisma/client';
 
@@ -51,18 +51,22 @@ export const payForAppointment = async (appointmentId: string, method: PaymentMe
     return payment;
   });
 
-  const queueEntry = await createQueueEntryForAppointment(appointmentId);
+  
 
   const qrCode = await generateQrCodeDataUrl(appointment.checkInCode);
 
   await createNotification({
     userId: appointment.patient.userId,
     title: 'Payment successful',
-    message: `Payment received. Your token number for today is #${queueEntry.tokenNumber}.`,
-    type: 'PAYMENT',
+    message: 'Payment received. Your appointment is confirmed. Please check in during your selected check-in window.',
   });
+  return {
+  payment: result,
+  qrCode,
+  checkInCode: appointment.checkInCode,
+};
 
-  return { payment: result, queueEntry, qrCode, checkInCode: appointment.checkInCode };
+ 
 };
 
 export const getPaymentById = async (id: string) => {
