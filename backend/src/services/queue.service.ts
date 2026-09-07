@@ -10,6 +10,13 @@ import { createNotification } from './notification.service.js';
  * by counting existing queue entries for that doctor on that date.
  * This is called from the payment service right after a successful payment.
  */
+const safeUserSelect = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  isActive: true,
+};
 export const createQueueEntryForAppointment = async (appointmentId: string) => {
   const appointment = await prisma.appointment.findUnique({
     where: { id: appointmentId },
@@ -48,17 +55,38 @@ export const createQueueEntryForAppointment = async (appointmentId: string) => {
   });
 };
 
-export const getDoctorQueueForToday = async (doctorId: string, date?: string) => {
-  const day = date ? startOfDay(date) : startOfDay(new Date());
+export const getDoctorQueueForToday = async (
+  doctorId: string,
+  date?: string,
+) => {
+  const day = date
+    ? startOfDay(date)
+    : startOfDay(new Date());
 
   const queue = await prisma.queueEntry.findMany({
-    where: { doctorId, date: { gte: startOfDay(day), lte: endOfDay(day) } },
-    include: {
-      appointment: {
-        include: { patient: { include: { user: true } } },
+    where: {
+      doctorId,
+      date: {
+        gte: startOfDay(day),
+        lte: endOfDay(day),
       },
     },
-    orderBy: { tokenNumber: 'asc' },
+    include: {
+      appointment: {
+        include: {
+          patient: {
+            include: {
+              user: {
+                select: safeUserSelect,
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      tokenNumber: 'asc',
+    },
   });
 
   return queue;
@@ -67,7 +95,11 @@ export const getDoctorQueueForToday = async (doctorId: string, date?: string) =>
 export const checkInAppointment = async (checkInCode: string) => {
   const appointment = await prisma.appointment.findUnique({
     where: { checkInCode },
-    include: { queueEntry: true, patient: true, doctor: true },
+    include: {
+      queueEntry: true,
+      patient: true,
+      doctor: true,
+    },
   });
 
   if (!appointment) {
@@ -80,6 +112,12 @@ export const checkInAppointment = async (checkInCode: string) => {
     );
   }
 
+  if (appointment.queueEntry) {
+    throw ApiError.conflict('Appointment has already been checked in');
+  }
+
+  const queueEntry = await createQueueEntryForAppointment(appointment.id);
+
   const updated = await prisma.appointment.update({
     where: { id: appointment.id },
     data: { status: 'CHECKED_IN' },
@@ -87,22 +125,61 @@ export const checkInAppointment = async (checkInCode: string) => {
   });
 
   const snapshot = await getDoctorQueueForToday(appointment.doctorId);
+
   broadcastQueueUpdate(appointment.doctorId, snapshot);
 
-  return updated;
+  return {
+    appointment: updated,
+    queueEntry,
+  };
 };
 
 export const updateQueueEntryStatus = async (
   queueEntryId: string,
   status: 'WAITING' | 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED',
+  requesterUserId: string,
+  role: 'PATIENT' | 'DOCTOR' | 'ADMIN',
 ) => {
   const queueEntry = await prisma.queueEntry.findUnique({
     where: { id: queueEntryId },
-    include: { appointment: { include: { patient: true } } },
+    include: {
+      appointment: {
+        include: {
+          patient: true,
+        },
+      },
+      doctor: {
+        include: {
+          user: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!queueEntry) {
     throw ApiError.notFound('Queue entry not found');
+  }
+
+  // Only ADMIN can update any queue.
+  if (
+    role === 'DOCTOR' &&
+    queueEntry.doctor.user.id !== requesterUserId
+  ) {
+    throw ApiError.forbidden(
+      'You can only update your own queue',
+    );
+  }
+
+  // PATIENT should never reach this function because
+  // the route only allows DOCTOR and ADMIN.
+  if (role === 'PATIENT') {
+    throw ApiError.forbidden(
+      'Patients cannot update queue status',
+    );
   }
 
   const updated = await prisma.$transaction(async (tx) => {
@@ -111,24 +188,37 @@ export const updateQueueEntryStatus = async (
       data: { status },
     });
 
-    const appointmentStatusMap: Record<string, 'IN_PROGRESS' | 'COMPLETED' | undefined> = {
+    const appointmentStatusMap: Record<
+      string,
+      'IN_PROGRESS' | 'COMPLETED' | undefined
+    > = {
       IN_PROGRESS: 'IN_PROGRESS',
       COMPLETED: 'COMPLETED',
     };
 
-    const nextAppointmentStatus = appointmentStatusMap[status];
+    const nextAppointmentStatus =
+      appointmentStatusMap[status];
+
     if (nextAppointmentStatus) {
       await tx.appointment.update({
         where: { id: entry.appointmentId },
-        data: { status: nextAppointmentStatus },
+        data: {
+          status: nextAppointmentStatus,
+        },
       });
     }
 
     return entry;
   });
 
-  const snapshot = await getDoctorQueueForToday(queueEntry.doctorId);
-  broadcastQueueUpdate(queueEntry.doctorId, snapshot);
+  const snapshot = await getDoctorQueueForToday(
+    queueEntry.doctorId,
+  );
+
+  broadcastQueueUpdate(
+    queueEntry.doctorId,
+    snapshot,
+  );
 
   if (status === 'IN_PROGRESS') {
     await createNotification({
@@ -142,13 +232,66 @@ export const updateQueueEntryStatus = async (
   return updated;
 };
 
-export const getQueueEntryById = async (id: string) => {
+
+export const getQueueEntryById = async (
+  id: string,
+  requesterUserId: string,
+  role: 'PATIENT' | 'DOCTOR' | 'ADMIN',
+) => {
   const entry = await prisma.queueEntry.findUnique({
     where: { id },
-    include: { appointment: { include: { patient: { include: { user: true } } } }, doctor: true },
+    include: {
+      appointment: {
+        include: {
+          patient: {
+            include: {
+              user: {
+                select: safeUserSelect,
+              },
+            },
+          },
+        },
+      },
+      doctor: {
+        include: {
+          user: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+    },
   });
+
   if (!entry) {
     throw ApiError.notFound('Queue entry not found');
   }
+
+  // ADMIN can view any queue entry.
+  if (role === 'ADMIN') {
+    return entry;
+  }
+
+  // DOCTOR can only view their own queue entries.
+  if (
+    role === 'DOCTOR' &&
+    entry.doctor.user.id !== requesterUserId
+  ) {
+    throw ApiError.forbidden(
+      'You can only view your own queue entries',
+    );
+  }
+
+  // PATIENT can only view their own queue entries.
+  if (
+    role === 'PATIENT' &&
+    entry.appointment.patient.userId !== requesterUserId
+  ) {
+    throw ApiError.forbidden(
+      'You can only view your own queue entries',
+    );
+  }
+
   return entry;
 };

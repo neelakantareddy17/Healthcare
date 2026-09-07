@@ -31,25 +31,34 @@ export const createDoctor = async (input: CreateDoctorInput) => {
 
   const hashedPassword = await hashPassword(input.password);
 
-  const doctor = await prisma.user.create({
-    data: {
-      name: input.name,
-      email: input.email,
-      password: hashedPassword,
-      phone: input.phone,
-      role: 'DOCTOR',
-      doctor: {
-        create: {
-          departmentId: input.departmentId,
-          specialization: input.specialization,
-          experienceYears: input.experienceYears ?? 0,
-          consultationFee: input.consultationFee,
-          qualification: input.qualification,
-        },
+ const doctor = await prisma.user.create({
+ data: {
+  name: input.name,
+  email: input.email,
+  password: hashedPassword,
+  ...(input.phone !== undefined ? { phone: input.phone } : {}),
+  role: 'DOCTOR',
+    
+    doctor: {
+      create: {
+        departmentId: input.departmentId,
+        specialization: input.specialization,
+        experienceYears: input.experienceYears ?? 0,
+        consultationFee: input.consultationFee,
+        ...(input.qualification !== undefined
+          ? { qualification: input.qualification }
+          : {}),
       },
     },
-    include: { doctor: { include: { department: true } } },
-  });
+  },
+  include: {
+    doctor: {
+      include: {
+        department: true,
+      },
+    },
+  },
+});
 
   const { password, ...safeUser } = doctor;
   return safeUser;
@@ -57,13 +66,22 @@ export const createDoctor = async (input: CreateDoctorInput) => {
 
 export const getAllDoctors = async (departmentId?: string) => {
   const doctors = await prisma.doctor.findMany({
-    where: departmentId ? { departmentId } : undefined,
+    ...(departmentId ? { where: { departmentId } } : {}),
     include: {
-      user: { select: { id: true, name: true, email: true, phone: true, isActive: true } },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          isActive: true,
+        },
+      },
       department: true,
     },
     orderBy: { createdAt: 'desc' },
   });
+
   return doctors;
 };
 
@@ -84,7 +102,18 @@ export const getDoctorById = async (id: string) => {
 export const getDoctorByUserId = async (userId: string) => {
   const doctor = await prisma.doctor.findUnique({
     where: { userId },
-    include: { user: true, department: true },
+    include: {
+  user: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      isActive: true,
+    },
+  },
+  department: true,
+},
   });
   if (!doctor) {
     throw ApiError.notFound('Doctor profile not found');
@@ -112,20 +141,34 @@ export const updateDoctor = async (id: string, data: UpdateDoctorInput) => {
     }
   }
 
-  const { name, phone, ...doctorFields } = data;
+ const { name, phone, ...doctorFields } = data;
 
-  if (name || phone) {
-    await prisma.user.update({
-      where: { id: doctor.userId },
-      data: { name, phone },
-    });
-  }
-
-  return prisma.doctor.update({
-    where: { id },
-    data: doctorFields,
-    include: { user: true, department: true },
+if (name !== undefined || phone !== undefined) {
+  await prisma.user.update({
+    where: { id: doctor.userId },
+    data: {
+      ...(name !== undefined ? { name } : {}),
+      ...(phone !== undefined ? { phone } : {}),
+    },
   });
+} 
+
+ return prisma.doctor.update({
+  where: { id },
+  data: doctorFields,
+  include: {
+    user: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        isActive: true,
+      },
+    },
+    department: true,
+  },
+});
 };
 
 export const deleteDoctor = async (id: string) => {

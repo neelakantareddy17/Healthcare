@@ -10,9 +10,14 @@ import type { RegisterInput, LoginInput } from '../validators/auth.validator.js'
  * (or seeded directly in the database for the first admin).
  */
 export const registerPatient = async (input: RegisterInput) => {
-  const existing = await prisma.user.findUnique({ where: { email: input.email } });
+  const existing = await prisma.user.findUnique({
+    where: { email: input.email },
+  });
+
   if (existing) {
-    throw ApiError.conflict('An account with this email already exists');
+    throw ApiError.conflict(
+      'An account with this email already exists',
+    );
   }
 
   const hashedPassword = await hashPassword(input.password);
@@ -22,24 +27,35 @@ export const registerPatient = async (input: RegisterInput) => {
       name: input.name,
       email: input.email,
       password: hashedPassword,
-      phone: input.phone,
+      phone: input.phone ?? null,
       role: 'PATIENT',
       patient: {
         create: {
-          dob: input.dob ? new Date(input.dob) : undefined,
-          gender: input.gender,
-          address: input.address,
-          bloodGroup: input.bloodGroup,
+          dob: input.dob
+            ? new Date(input.dob)
+            : null,
+          gender: input.gender ?? null,
+          address: input.address ?? null,
+          bloodGroup: input.bloodGroup ?? null,
         },
       },
     },
-    include: { patient: true },
+    include: {
+      patient: true,
+    },
   });
 
-  const token = signToken({ userId: user.id, role: user.role });
+  const token = signToken({
+    userId: user.id,
+    role: user.role,
+  });
 
   const { password, ...safeUser } = user;
-  return { user: safeUser, token };
+
+  return {
+    user: safeUser,
+    token,
+  };
 };
 
 export const login = async (input: LoginInput) => {

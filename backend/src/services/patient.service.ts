@@ -26,7 +26,17 @@ export const getPatientById = async (id: string) => {
 export const getPatientByUserId = async (userId: string) => {
   const patient = await prisma.patient.findUnique({
     where: { userId },
-    include: { user: true },
+    include: {
+  user: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      isActive: true,
+    },
+  },
+},
   });
   if (!patient) {
     throw ApiError.notFound('Patient profile not found');
@@ -45,19 +55,36 @@ interface UpdatePatientInput {
 
 export const updatePatient = async (id: string, data: UpdatePatientInput) => {
   const patient = await getPatientById(id);
+
   const { name, phone, dob, ...patientFields } = data;
 
-  if (name || phone) {
-    await prisma.user.update({ where: { id: patient.userId }, data: { name, phone } });
+  if (name !== undefined || phone !== undefined) {
+    await prisma.user.update({
+      where: { id: patient.userId },
+      data: {
+        ...(name !== undefined ? { name } : {}),
+        ...(phone !== undefined ? { phone } : {}),
+      },
+    });
   }
 
   return prisma.patient.update({
     where: { id },
     data: {
       ...patientFields,
-      dob: dob ? new Date(dob) : undefined,
+      ...(dob !== undefined ? { dob: new Date(dob) } : {}),
     },
-    include: { user: true },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          isActive: true,
+        },
+      },
+    },
   });
 };
 
