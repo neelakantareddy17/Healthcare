@@ -2,7 +2,7 @@ import Badge from '../common/Badge';
 import { formatDate, formatTime } from '../../utils/formatDate';
 import './AppointmentCard.css';
 
-function AppointmentCard({ appointment, onCancel }) {
+function AppointmentCard({ appointment, onCancel, onCheckIn }) {
   const statusTypeMap = {
     Upcoming: 'primary',
     Completed: 'success',
@@ -27,19 +27,21 @@ function AppointmentCard({ appointment, onCancel }) {
           <span>🕐</span>
           <span>{appointment.time}</span>
         </div>
-        <div className="appt-card__info-item">
-          <span>🎫</span>
-          <span>Token #{appointment.tokenNumber}</span>
-        </div>
-        <div className="appt-card__info-item">
-          <span>💰</span>
-          <span>₹{appointment.fee}</span>
-        </div>
       </div>
-      {appointment.status === 'Upcoming' && onCancel && (
-        <button className="appt-card__cancel" onClick={() => onCancel(appointment.id)}>
-          Cancel Appointment
-        </button>
+
+      {(onCheckIn || (appointment.status === 'Upcoming' && onCancel)) && (
+        <div className="appt-card__actions">
+          {onCheckIn && (
+            <button className="appt-card__checkin" onClick={onCheckIn}>
+              Check-in
+            </button>
+          )}
+          {appointment.status === 'Upcoming' && onCancel && (
+            <button className="appt-card__cancel" onClick={() => onCancel(appointment.id)}>
+              Cancel Appointment
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

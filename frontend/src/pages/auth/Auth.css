@@ -1,51 +1,412 @@
-.auth-title { font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
-.auth-subtitle { font-size: 15px; color: var(--text-light); margin-bottom: 28px; }
+/* MediQ AI — Login page, matched to design screenshot */
 
-.auth-error {
-  background: #fee2e2;
-  color: #dc2626;
-  padding: 12px 16px;
+.mq-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px 16px;
+  background:
+    linear-gradient(180deg, rgba(15, 30, 40, 0.35), rgba(15, 30, 40, 0.55)),
+    /* Replace this with your own hospital/office background photo */
+    url('/assets/login-background.jpg') center / cover no-repeat;
+  background-color: #2b3a42; /* fallback if no image is set */
+}
+
+.mq-card {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 28px;
+  padding: 40px 32px 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.mq-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.mq-logo {
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
-  font-size: 14px;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f6f6f, #0b3d91);
+  box-shadow: 0 6px 14px rgba(11, 61, 145, 0.35);
+}
+
+.mq-brand-name {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0b3d5c;
+  letter-spacing: -0.02em;
+}
+
+.mq-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #16232b;
+  margin: 0 0 6px;
+}
+
+.mq-subtitle {
+  text-align: center;
+  font-size: 14.5px;
+  color: #5b6b74;
+  margin: 0 0 28px;
+}
+
+.mq-error {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  color: #b3261e;
+  font-size: 13.5px;
+  padding: 10px 14px;
+  border-radius: 10px;
   margin-bottom: 16px;
 }
 
-.auth-divider {
-  text-align: center;
-  color: var(--text-light);
-  font-size: 13px;
-  margin: 20px 0 14px;
+.mq-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.mq-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #26343c;
+  margin-bottom: 8px;
+}
+
+.mq-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+.mq-forgot {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f6f6f;
+  text-decoration: none;
+}
+
+.mq-forgot:hover {
+  text-decoration: underline;
+}
+
+.mq-input-wrap {
   position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(120, 130, 138, 0.25);
+  border-radius: 14px;
+  margin-top: 8px;
 }
-.auth-divider::before, .auth-divider::after {
-  content: '';
+
+.mq-input-icon {
   position: absolute;
-  top: 50%;
-  width: 30%;
-  height: 1px;
-  background: var(--border);
+  left: 14px;
+  color: #7a8890;
+  pointer-events: none;
 }
-.auth-divider::before { left: 0; }
-.auth-divider::after { right: 0; }
 
-.demo-btns { display: flex; gap: 10px; margin-bottom: 20px; }
+.mq-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+  color: #1e2a30;
+  padding: 15px 44px;
+}
 
-.demo-btn {
-  flex: 1;
-  padding: 10px 8px;
-  border-radius: 12px;
-  background: var(--primary-soft);
-  color: var(--primary);
+.mq-input::placeholder {
+  color: #9aa5ab;
+}
+
+.mq-eye {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #7a8890;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.mq-submit {
+  margin-top: 26px;
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  background: linear-gradient(90deg, #0f6f6f, #0b3d91);
+  box-shadow: 0 10px 24px rgba(11, 61, 145, 0.3);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.mq-submit:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.mq-submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.mq-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.mq-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0;
+  color: #8b969c;
   font-size: 13px;
   font-weight: 600;
-  border: 1.5px solid var(--primary-light);
-  cursor: pointer;
-  transition: var(--transition);
 }
-.demo-btn:hover { background: var(--primary-light); }
-.demo-btn--admin { background: #fef9c3; color: #b45309; border-color: #fde68a; }
-.demo-btn--admin:hover { background: #fde68a; }
 
-.auth-link { text-align: center; font-size: 14px; color: var(--text-light); }
-.auth-link a { color: var(--primary); font-weight: 600; }
+.mq-divider::before,
+.mq-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(120, 130, 138, 0.3);
+}
+
+.mq-sso {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid rgba(120, 130, 138, 0.25);
+  border-radius: 14px;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #26343c;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.mq-sso:hover {
+  background: #f6f8f9;
+}
+
+.mq-demo-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.mq-demo-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(120, 130, 138, 0.25);
+  border-radius: 12px;
+  padding: 10px 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #26343c;
+  cursor: pointer;
+}
+
+.mq-demo-btn--admin {
+  color: #0b3d91;
+}
+
+.mq-demo-btn:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.mq-signup {
+  text-align: center;
+  font-size: 14px;
+  color: #5b6b74;
+  margin: 22px 0 0;
+}
+
+.mq-signup a {
+  color: #0b3d91;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mq-signup a:hover {
+  text-decoration: underline;
+}
+
+.mq-terms {
+  text-align: center;
+  font-size: 12px;
+  color: #92a0a6;
+  line-height: 1.5;
+  margin: 18px 0 0;
+}
+
+@media (max-width: 420px) {
+  .mq-card {
+    padding: 32px 22px 26px;
+    border-radius: 22px;
+  }
+}
+
+/* ===== Register page additions ===== */
+
+.mq-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.mq-page-header .mq-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+}
+
+.mq-page-brand {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.mq-page-tagline {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 4px 0 0;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+}
+
+.mq-title--left,
+.mq-subtitle--left {
+  text-align: left;
+}
+
+.mq-title--left {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.mq-subtitle--left {
+  margin-bottom: 24px;
+}
+
+.mq-label--spaced {
+  margin-top: 18px;
+}
+
+.mq-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #3a4750;
+  cursor: pointer;
+}
+
+.mq-checkbox {
+  margin-top: 2px;
+  width: 17px;
+  height: 17px;
+  accent-color: #0d6e64;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mq-terms-link {
+  color: #0d6e64;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mq-terms-link:hover {
+  text-decoration: underline;
+}
+
+.mq-submit--solid {
+  background: #0d6e64;
+  box-shadow: 0 10px 24px rgba(13, 110, 100, 0.3);
+}
+
+.mq-insight {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(178, 235, 224, 0.9), rgba(140, 210, 205, 0.9));
+  border-radius: 20px;
+  padding: 18px 20px;
+}
+
+.mq-insight-icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.mq-insight-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0b3d3a;
+  margin: 0 0 4px;
+}
+
+.mq-insight-text {
+  font-size: 13px;
+  color: #14403c;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.mq-footer-note {
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  max-width: 320px;
+}

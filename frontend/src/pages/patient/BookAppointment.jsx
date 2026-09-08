@@ -8,7 +8,11 @@ import { getDoctorById } from '../../services/doctor';
 import { bookAppointment } from '../../services/appointment';
 import './BookAppointment.css';
 
-const TIME_SLOTS = ['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'];
+const SLOT_GROUPS = [
+  { title: 'Morning Slots', slots: ['09:00 AM', '10:00 AM', '11:00 AM'] },
+  { title: 'Afternoon Slots', slots: ['12:00 PM', '02:00 PM', '03:00 PM'] },
+  { title: 'Evening Slots', slots: ['04:00 PM', '05:00 PM'] },
+];
 
 function BookAppointment() {
   const { id } = useParams();
@@ -24,6 +28,8 @@ function BookAppointment() {
   useEffect(() => {
     getDoctorById(id).then((d) => { setDoctor(d); setLoading(false); });
   }, [id]);
+
+  
 
   const handleBook = async () => {
     if (!selectedDate || !selectedTime) return alert('Please select date and time');
@@ -66,26 +72,37 @@ function BookAppointment() {
 
       <div className="book-section">
         <h3 className="book-section__title">Select Date</h3>
-        <input
-          type="date"
-          className="book-date-input"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          min={today}
-        />
+        <div className="book-date-picker">
+          <span className="book-date-icon">📅</span>
+          <input
+            type="date"
+            className="book-date-input"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            min={today}
+          />
+        </div>
       </div>
 
       <div className="book-section">
         <h3 className="book-section__title">Select Time Slot</h3>
-        <div className="time-slots">
-          {TIME_SLOTS.map((t) => (
-            <button
-              key={t}
-              className={`time-slot ${selectedTime === t ? 'time-slot--active' : ''}`}
-              onClick={() => setSelectedTime(t)}
-            >
-              {t}
-            </button>
+        <div className="slot-groups">
+          {SLOT_GROUPS.map((group) => (
+            <div key={group.title} className="slot-group">
+              <h4 className="slot-group__heading">{group.title}</h4>
+              <div className="slot-grid">
+                {group.slots.map((t) => (
+                  <button
+                    key={t}
+                    className={`time-slot ${selectedTime === t ? 'time-slot--active' : ''}`}
+                    onClick={() => setSelectedTime(t)}
+                    type="button"
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>

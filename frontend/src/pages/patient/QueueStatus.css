@@ -1,1 +1,300 @@
-.queue-refresh-hint { font-size: 13px; color: var(--text-light); margin-bottom: 16px; }
+/* MediQ AI — Live Queue Status */
+
+.qs-eyebrow {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0d6e64;
+  margin: 4px 0 4px;
+}
+
+.qs-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #16232b;
+  margin: 0 0 24px;
+}
+
+/* Concentric token display */
+.qs-token-orbit {
+  width: 280px;
+  height: 280px;
+  margin: 0 auto 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(85, 214, 184, 0.28) 0%, rgba(85, 214, 184, 0.14) 55%, rgba(85, 214, 184, 0.05) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qs-token-card {
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #0d6e64;
+  box-shadow: 0 16px 40px rgba(13, 110, 100, 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-3deg);
+}
+
+.qs-token-number {
+  font-size: 40px;
+  font-weight: 800;
+  color: #0d6e64;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.qs-token-label {
+  font-size: 13px;
+  color: #8b969c;
+  margin: 4px 0 0;
+}
+
+/* Stat cards */
+.qs-stat-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.qs-stat-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(16, 40, 50, 0.06);
+}
+
+.qs-stat-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #8b969c;
+  margin: 0 0 10px;
+}
+
+.qs-stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #16232b;
+  margin: 0 0 10px;
+}
+
+.qs-stat-unit {
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b969c;
+}
+
+.qs-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.qs-pill--lavender {
+  background: rgba(124, 108, 226, 0.14);
+  color: #6c5ce0;
+}
+
+.qs-pill--mint {
+  background: rgba(85, 214, 184, 0.25);
+  color: #0d6e64;
+}
+
+/* Doctor card */
+.qs-doctor-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 26px;
+  box-shadow: 0 8px 24px rgba(16, 40, 50, 0.06);
+}
+
+.qs-doctor-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.qs-doctor-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.qs-doctor-photo--placeholder {
+  background: #eef1f2;
+}
+
+.qs-doctor-name {
+  font-size: 16.5px;
+  font-weight: 800;
+  color: #16232b;
+  margin: 0 0 2px;
+}
+
+.qs-doctor-specialty {
+  font-size: 13px;
+  color: #8b969c;
+  margin: 0 0 6px;
+}
+
+.qs-doctor-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  color: #16232b;
+  margin: 0;
+}
+
+.qs-doctor-rating svg {
+  color: #f5b301;
+}
+
+.qs-doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #eef1f2;
+  padding-top: 14px;
+  text-align: center;
+}
+
+.qs-doctor-grid > div {
+  border-right: 1px solid #eef1f2;
+}
+
+.qs-doctor-grid > div:last-child {
+  border-right: none;
+}
+
+.qs-doctor-grid__label {
+  font-size: 11.5px;
+  color: #9aa5ab;
+  margin: 0 0 4px;
+}
+
+.qs-doctor-grid__value {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0d6e64;
+  margin: 0;
+}
+
+/* Queue list */
+.qs-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.qs-updated {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0d6e64;
+  background: rgba(85, 214, 184, 0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.qs-queue-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid #eef1f2;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.qs-queue-item--current {
+  border: 1.5px solid #0d6e64;
+  background: rgba(85, 214, 184, 0.08);
+}
+
+.qs-queue-token {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e7eaec;
+  color: #4a565c;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.qs-queue-token--current {
+  background: #0d6e64;
+  color: #fff;
+}
+
+.qs-queue-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.qs-queue-status {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #16232b;
+  margin: 0 0 2px;
+}
+
+.qs-queue-note {
+  font-size: 12.5px;
+  color: #8b969c;
+  margin: 0;
+}
+
+.qs-queue-icon {
+  color: #0d6e64;
+  flex-shrink: 0;
+}
+
+.qs-queue-waiting {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #9aa5ab;
+  flex-shrink: 0;
+}
+
+.qs-view-more {
+  display: block;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #eef1f2;
+  border-radius: 16px;
+  padding: 15px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0d6e64;
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+
+.qs-view-more:hover {
+  background: #f6f8f9;
+}

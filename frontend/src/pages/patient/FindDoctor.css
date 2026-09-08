@@ -1,18 +1,298 @@
-.page-title { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 16px; }
+/* MediQ AI — Find Doctor / Search */
 
-.spec-chips { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 8px; scrollbar-width: none; }
-.spec-chips::-webkit-scrollbar { display: none; }
-.spec-chip {
-  white-space: nowrap;
-  padding: 8px 18px;
-  border-radius: 20px;
-  background: #fff;
-  border: 1.5px solid var(--border);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-light);
-  cursor: pointer;
-  transition: var(--transition);
+.fd-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 18px;
 }
-.spec-chip--active { background: var(--primary); color: #fff; border-color: var(--primary); }
-.spec-chip:hover:not(.spec-chip--active) { border-color: var(--primary); color: var(--primary); }
+
+.fd-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #e4e8ea;
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.fd-search__icon {
+  color: #9aa5ab;
+  flex-shrink: 0;
+}
+
+.fd-search__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14.5px;
+  color: #16232b;
+}
+
+.fd-search__input::placeholder {
+  color: #9aa5ab;
+}
+
+.fd-filter-btn {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 14px;
+  background: #0d6e64;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.fd-filter-btn:hover {
+  filter: brightness(1.05);
+}
+
+/* Recommendation card */
+.fd-recommendation {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid rgba(13, 110, 100, 0.18);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 26px;
+}
+
+.fd-recommendation__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #55d6b8;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fd-recommendation__title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0d6e64;
+  margin: 0 0 4px;
+}
+
+.fd-recommendation__text {
+  font-size: 13.5px;
+  color: #5b6b74;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Section head */
+.fd-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.fd-viewall {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0d6e64;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Specialists */
+.fd-specialties {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.fd-specialty {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.fd-specialty__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fd-specialty__icon--rose {
+  background: rgba(214, 69, 90, 0.1);
+  color: #d6455a;
+}
+
+.fd-specialty__icon--teal {
+  background: rgba(13, 110, 100, 0.1);
+  color: #0d6e64;
+}
+
+.fd-specialty__icon--blue {
+  background: rgba(59, 92, 214, 0.1);
+  color: #3b5cd6;
+}
+
+.fd-specialty__label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #16232b;
+}
+
+/* Doctor cards */
+.fd-doctor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fd-doctor-card {
+  display: flex;
+  gap: 14px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(16, 40, 50, 0.06);
+}
+
+.fd-doctor-photo-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.fd-doctor-photo {
+  width: 84px;
+  height: 84px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.fd-doctor-rating {
+  position: absolute;
+  left: 8px;
+  bottom: -10px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: #55d6b8;
+  color: #063f37;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+
+.fd-doctor-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.fd-doctor-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #16232b;
+  margin: 0 0 2px;
+}
+
+.fd-doctor-specialty {
+  font-size: 13.5px;
+  color: #8b969c;
+  margin: 0 0 8px;
+}
+
+.fd-doctor-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  color: #8b969c;
+}
+
+.fd-badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 7px;
+}
+
+.fd-badge--default {
+  background: rgba(13, 110, 100, 0.1);
+  color: #0d6e64;
+}
+
+.fd-badge--rated {
+  background: rgba(85, 214, 184, 0.2);
+  color: #0d6e64;
+}
+
+.fd-badge--fast {
+  background: #0d6e64;
+  color: #fff;
+}
+
+.fd-badge--expert {
+  background: rgba(59, 92, 214, 0.12);
+  color: #3b5cd6;
+}
+
+.fd-doctor-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.fd-fee-label {
+  font-size: 11.5px;
+  color: #9aa5ab;
+  margin: 0 0 2px;
+}
+
+.fd-fee-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: #16232b;
+  margin: 0;
+}
+
+.fd-book-btn {
+  background: #0d6e64;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fd-book-btn:hover {
+  filter: brightness(1.05);
+}
+
+.fd-empty {
+  text-align: center;
+  color: #8b969c;
+  font-size: 14px;
+  padding: 30px 0;
+}
