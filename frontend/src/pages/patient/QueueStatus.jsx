@@ -4,55 +4,26 @@ import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
 import { getPatientQueue } from '../../services/queue';
+import { SYNTHETIC_QUEUE } from './FullQueue';
 import './QueueStatus.css';
 
-// TODO: confirm the real shape returned by getPatientQueue / your queue API.
-// This page expects, per active queue entry:
-// {
-//   currentToken, myToken, patientsAhead, estimatedWait, queueLabel,
-//   doctor: { name, specialty, photo, rating, reviewCount, room, building, floor },
-//   entries: [{ token, status: 'in-progress' | 'up-next' | 'upcoming', note, time }]
-// }
-// Fallback demo data below mirrors the screenshot so the page renders meaningfully either way.
-
-const FALLBACK = {
-  currentToken: 'A-42',
-  myToken: 'A-48',
-  patientsAhead: 5,
-  estimatedWait: '14 mins',
-  queueLabel: 'OPD-03',
-  doctor: {
-    name: 'Dr. Sarah Jenkins',
-    specialty: 'Senior Cardiologist',
-    photo: '',
-    rating: 4.9,
-    reviewCount: 120,
-    room: '102-B',
-    building: 'Wing A',
-    floor: '2nd',
-  },
-  entries: [
-    { token: 'A-42', status: 'in-progress', note: 'Started 4 mins ago' },
-    { token: 'A-43', status: 'up-next', note: 'Expected 10:45 AM' },
-    { token: 'A-44', status: 'upcoming', note: 'Expected 10:55 AM' },
-    { token: 'A-45', status: 'upcoming', note: 'Expected 11:05 AM' },
-  ],
-};
+const FALLBACK = SYNTHETIC_QUEUE;
 
 function QueueStatus() {
   const { user } = useAuth();
   const { queueId } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showAllInline, setShowAllInline] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       try {
         const q = await getPatientQueue(user?.id || 1, queueId);
         const looksValid = q && !Array.isArray(q) && Array.isArray(q.entries) && q.doctor;
-        setData(looksValid ? q : FALLBACK);
+        setData(looksValid ? q : SYNTHETIC_QUEUE);
       } catch {
-        setData(FALLBACK);
+        setData(SYNTHETIC_QUEUE);
       } finally {
         setLoading(false);
       }
@@ -146,11 +117,14 @@ function QueueStatus() {
       </div>
 
       {current && (
-        <div className="qs-queue-item qs-queue-item--current">
+        <div className={`qs-queue-item qs-queue-item--current ${current.isMe ? 'qs-queue-item--me' : ''}`}>
           <div className="qs-queue-token qs-queue-token--current">{current.token}</div>
           <div className="qs-queue-body">
-            <p className="qs-queue-status">{statusLabel[current.status]}</p>
-            <p className="qs-queue-note">{current.note}</p>
+            <div className="qs-queue-header-row">
+              <p className="qs-queue-status">{statusLabel[current.status] || current.status}</p>
+              {current.isMe && <span className="qs-tag-me">You</span>}
+            </div>
+            <p className="qs-queue-note">{current.patientName ? `${current.patientName} · ` : ''}{current.note}</p>
           </div>
           <span className="qs-queue-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="14" height="16" rx="1.5" stroke="currentColor" strokeWidth="1.5" /><path d="M17.5 15.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z" stroke="currentColor" strokeWidth="1.3" /></svg>
@@ -159,21 +133,62 @@ function QueueStatus() {
       )}
 
       {nextUp && (
-        <div className="qs-queue-item">
-          <div className="qs-queue-token">{nextUp.token}</div>
+        <div className={`qs-queue-item ${nextUp.isMe ? 'qs-queue-item--me' : ''}`}>
+          <div className={`qs-queue-token ${nextUp.isMe ? 'qs-queue-token--me' : ''}`}>{nextUp.token}</div>
           <div className="qs-queue-body">
-            <p className="qs-queue-status">{statusLabel[nextUp.status]}</p>
-            <p className="qs-queue-note">{nextUp.note}</p>
+            <div className="qs-queue-header-row">
+              <p className="qs-queue-status">{statusLabel[nextUp.status] || nextUp.status}</p>
+              {nextUp.isMe && <span className="qs-tag-me">You</span>}
+            </div>
+            <p className="qs-queue-note">{nextUp.patientName ? `${nextUp.patientName} · ` : ''}{nextUp.note}</p>
           </div>
           <span className="qs-queue-waiting">Waiting</span>
         </div>
       )}
 
-      {remainingCount > 0 && (
+      {showAllInline &&
+        entries
+          .filter((e) => e.token !== current?.token && e.token !== nextUp?.token)
+          .map((entry) => (
+            <div
+              key={entry.token}
+              className={`qs-queue-item ${entry.isMe ? 'qs-queue-item--me' : ''}`}
+            >
+              <div className={`qs-queue-token ${entry.isMe ? 'qs-queue-token--me' : ''}`}>
+                {entry.token}
+              </div>
+              <div className="qs-queue-body">
+                <div className="qs-queue-header-row">
+                  <p className="qs-queue-status">
+                    {statusLabel[entry.status] || 'Upcoming'}
+                  </p>
+                  {entry.isMe && <span className="qs-tag-me">You</span>}
+                </div>
+                <p className="qs-queue-note">
+                  {entry.patientName ? `${entry.patientName} · ` : ''}
+                  {entry.note}
+                </p>
+              </div>
+              <span className="qs-queue-waiting">
+                {entry.isMe ? '⭐ Your Turn' : 'Waiting'}
+              </span>
+            </div>
+          ))}
+
+      <div className="qs-actions-group">
         <Link to="/patient/queue/full" className="qs-view-more">
-          View Full Queue ({remainingCount} more)
+          View Full Queue ({entries.length} Tokens) →
         </Link>
-      )}
+        {remainingCount > 0 && (
+          <button
+            type="button"
+            className="qs-toggle-btn"
+            onClick={() => setShowAllInline(!showAllInline)}
+          >
+            {showAllInline ? '▲ Collapse Inline List' : `▼ Expand Inline (${remainingCount} More)`}
+          </button>
+        )}
+      </div>
     </PatientLayout>
   );
 }

@@ -14,6 +14,7 @@ import BookingSuccess from '../pages/patient/BookingSuccess';
 import Checkin from '../pages/patient/Checkin';
 import QRScanner from '../pages/patient/QRScanner';
 import QueueStatus from '../pages/patient/QueueStatus';
+import FullQueue from '../pages/patient/FullQueue';
 import MedicalRecords from '../pages/patient/MedicalRecords';
 import Notifications from '../pages/patient/Notifications';
 import Profile from '../pages/patient/Profile';
@@ -51,6 +52,7 @@ function AppRoutes() {
       <Route path="/patient/checkin" element={<RoleRoute role="patient"><Checkin /></RoleRoute>} />
       <Route path="/patient/qr-scanner" element={<RoleRoute role="patient"><QRScanner /></RoleRoute>} />
       <Route path="/patient/queue" element={<RoleRoute role="patient"><QueueStatus /></RoleRoute>} />
+      <Route path="/patient/queue/full" element={<RoleRoute role="patient"><FullQueue /></RoleRoute>} />
       <Route path="/patient/medical-records" element={<RoleRoute role="patient"><MedicalRecords /></RoleRoute>} />
       <Route path="/patient/notifications" element={<RoleRoute role="patient"><Notifications /></RoleRoute>} />
       <Route path="/patient/profile" element={<RoleRoute role="patient"><Profile /></RoleRoute>} />
