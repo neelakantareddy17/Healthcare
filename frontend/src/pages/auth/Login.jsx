@@ -14,7 +14,11 @@ function Login() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const redirectMap = { patient: '/patient', doctor: '/doctor', admin: '/admin' };
+  const redirectMap = {
+  PATIENT: '/patient',
+  DOCTOR: '/doctor',
+  ADMIN: '/admin',
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
