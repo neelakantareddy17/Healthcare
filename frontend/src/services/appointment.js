@@ -1,37 +1,54 @@
-import { sleep, generateToken } from '../utils/helpers';
+import api from './api';
 
-let MOCK_APPOINTMENTS = [
-  { id: 1, doctorId: 1, doctorName: 'Dr. Priya Nair', specialty: 'Cardiologist', patientId: 1, patientName: 'Arjun Sharma', date: '2026-08-10', time: '10:00 AM', status: 'Upcoming', tokenNumber: 14, qrCode: 'APT-001-2026', fee: 800 },
-  { id: 2, doctorId: 2, doctorName: 'Dr. Rahul Mehta', specialty: 'Neurologist', patientId: 1, patientName: 'Arjun Sharma', date: '2026-07-20', time: '11:30 AM', status: 'Completed', tokenNumber: 7, qrCode: 'APT-002-2026', fee: 1000 },
-  { id: 3, doctorId: 4, doctorName: 'Dr. Suresh Kumar', specialty: 'Orthopedic', patientId: 1, patientName: 'Arjun Sharma', date: '2026-07-05', time: '09:00 AM', status: 'Completed', tokenNumber: 22, qrCode: 'APT-003-2026', fee: 900 },
-];
-
-export const getPatientAppointments = async (patientId) => {
-  await sleep(600);
-  return MOCK_APPOINTMENTS.filter((a) => a.patientId === Number(patientId));
+const statusLabels = {
+  PENDING: 'Pending',
+  PAID: 'Paid',
+  CHECKED_IN: 'Checked In',
+  IN_PROGRESS: 'In Progress',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
 };
 
-export const getDoctorAppointments = async (doctorId) => {
-  await sleep(600);
-  return MOCK_APPOINTMENTS.filter((a) => a.doctorId === Number(doctorId));
+const normalizeAppointment = (appointment) => ({
+  ...appointment,
+  doctorName: appointment.doctor?.user?.name || 'Doctor',
+  specialty: appointment.doctor?.specialization || appointment.doctor?.department?.name || '',
+  date: appointment.appointmentDate,
+  time: appointment.timeSlot,
+  status: appointment.status,
+  statusLabel: statusLabels[appointment.status] || appointment.status,
+  fee: appointment.doctor?.consultationFee,
+  checkInCode: appointment.checkInCode || appointment.payment?.checkInCode || null,
+});
+
+const extractAppointmentList = (response) => {
+  const result = response.data.data;
+  return (result?.data || []).map(normalizeAppointment);
 };
 
-export const bookAppointment = async (data) => {
-  await sleep(900);
-  const newAppt = {
-    id: Date.now(),
-    ...data,
-    status: 'Upcoming',
-    tokenNumber: generateToken(),
-    qrCode: `APT-${Date.now()}-2026`,
-  };
-  MOCK_APPOINTMENTS.push(newAppt);
-  return newAppt;
+export const getPatientAppointments = async () => {
+  const response = await api.get('/appointments');
+  return extractAppointmentList(response);
+};
+
+export const getDoctorAppointments = async (doctorId, params = {}) => {
+  const response = await api.get('/appointments', {
+    params: { doctorId, ...params },
+  });
+  return extractAppointmentList(response);
+};
+
+export const bookAppointment = async ({ doctorId, appointmentDate, timeSlot, reason }) => {
+  const response = await api.post('/appointments', {
+    doctorId,
+    appointmentDate,
+    timeSlot,
+    ...(reason ? { reason } : {}),
+  });
+  return normalizeAppointment(response.data.data);
 };
 
 export const cancelAppointment = async (id) => {
-  await sleep(500);
-  const appt = MOCK_APPOINTMENTS.find((a) => a.id === id);
-  if (appt) appt.status = 'Cancelled';
-  return appt;
+  const response = await api.put(`/appointments/${id}/cancel`);
+  return normalizeAppointment(response.data.data);
 };

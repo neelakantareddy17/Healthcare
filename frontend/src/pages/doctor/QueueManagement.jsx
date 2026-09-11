@@ -4,7 +4,7 @@ import DoctorLayout from '../../layouts/DoctorLayout';
 import QueueCard from '../../components/queue/QueueCard';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
-import { getDoctorQueue, callNextToken } from '../../services/queue';
+import { getDoctorQueue, callNextToken, updateQueueStatus } from '../../services/queue';
 import Button from '../../components/common/Button';
 
 function QueueManagement() {
@@ -12,16 +12,27 @@ function QueueManagement() {
   const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
   const [calling, setCalling] = useState(false);
+  const [completing, setCompleting] = useState(false);
 
   useEffect(() => {
-    getDoctorQueue(user?.id || 2).then((q) => { setQueue(q); setLoading(false); });
+    getDoctorQueue().then((q) => { setQueue(q); setLoading(false); });
   }, [user]);
 
   const handleNext = async () => {
     setCalling(true);
-    const updated = await callNextToken(user?.id || 2);
+    const updated = await callNextToken();
     setQueue(updated);
     setCalling(false);
+  };
+
+  const handleComplete = async (queueId) => {
+    setCompleting(true);
+    try {
+      await updateQueueStatus(queueId, 'COMPLETED');
+      setQueue(await getDoctorQueue());
+    } finally {
+      setCompleting(false);
+    }
   };
 
   return (
@@ -35,7 +46,13 @@ function QueueManagement() {
       {loading ? <Loader /> : queue.length === 0 ? (
         <EmptyState icon="🎫" title="No patients in queue" />
       ) : (
-        queue.map((q) => <QueueCard key={q.id} queue={q} />)
+        queue.map((q) => (
+          <QueueCard
+            key={q.id}
+            queue={q}
+            onComplete={q.status === 'IN_PROGRESS' && !completing ? () => handleComplete(q.id) : undefined}
+          />
+        ))
       )}
     </DoctorLayout>
   );

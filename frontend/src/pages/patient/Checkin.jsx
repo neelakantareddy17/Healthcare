@@ -1,18 +1,34 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import PatientLayout from '../../layouts/PatientLayout';
 import Button from '../../components/common/Button';
+import { checkIn } from '../../services/queue';
+import { getStoredPayment } from '../../services/payment';
 import './BookingSuccess.css';
 
 function Checkin() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const appt = state?.appointment;
-  const qrSrc = appt?.qrCode
-    ? appt.qrCode.startsWith('data:image')
-      ? appt.qrCode
-      : `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(appt.qrCode)}`
-    : '';
-  const hasImageQr = typeof appt?.qrCode === 'string' && appt.qrCode.startsWith('data:image');
+  const payment = getStoredPayment(appt?.id);
+  const [checkingIn, setCheckingIn] = useState(false);
+  const [checkedIn, setCheckedIn] = useState(false);
+  const [error, setError] = useState('');
+  const qrSrc = payment?.qrCode || appt?.qrCode || '';
+  const checkInCode = payment?.checkInCode || appt?.checkInCode;
+
+  const handleCheckIn = async () => {
+    setCheckingIn(true);
+    setError('');
+    try {
+      await checkIn(checkInCode);
+      setCheckedIn(true);
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || 'Check-in could not be completed.');
+    } finally {
+      setCheckingIn(false);
+    }
+  };
 
   if (!appt) {
     return (
@@ -34,11 +50,7 @@ function Checkin() {
             {qrSrc ? (
               <img className="qr-image" src={qrSrc} alt="Appointment QR code" />
             ) : (
-              <div className="qr-pattern">
-                {Array.from({ length: 49 }).map((_, i) => (
-                  <div key={i} className={`qr-cell ${Math.random() > 0.5 ? 'qr-cell--dark' : ''}`} />
-                ))}
-              </div>
+              <p className="qr-hint">Payment QR is unavailable for this appointment.</p>
             )}
           </div>
           <p className="qr-hint">Present this QR at the clinic for fast check-in.</p>
@@ -60,6 +72,12 @@ function Checkin() {
         </div>
 
         <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {checkedIn ? (
+            <p role="status">Checked in successfully. Your queue entry is now active.</p>
+          ) : (
+            <Button title={checkingIn ? 'Checking in...' : 'Confirm Check-in'} onClick={handleCheckIn} disabled={checkingIn || !checkInCode} />
+          )}
+          {error && <p role="alert">{error}</p>}
           <Button title="Go to Home" variant="secondary" onClick={() => navigate('/patient')} />
         </div>
       </div>

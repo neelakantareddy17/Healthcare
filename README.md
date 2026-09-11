@@ -1,6 +1,22 @@
-# Healthcare Backend API
+# Healthcare
 
-A production-ready **Healthcare Management** backend built with **Node.js, Express, TypeScript, PostgreSQL, and Prisma ORM**. Supports patient self-registration, admin-managed doctors, appointment booking with mocked payments, QR-code check-in, a per-doctor daily token queue system, real-time queue updates via **Socket.IO**, and in-app notifications.
+Full-stack healthcare and hospital management application with a Node.js/Express/TypeScript backend and a React/Vite frontend. The system supports role-based authentication, doctor discovery, appointment booking, mocked payments, QR check-in, doctor queues, notifications, and admin dashboards.
+
+The backend is the source of truth for authorization and business rules. The frontend uses centralized Axios services and validates persisted sessions through `GET /api/auth/me`.
+
+## Repository layout
+
+```text
+Healthcare/
+├── backend/       # Express API, Prisma schema, migrations, seed data
+├── frontend/      # React/Vite application
+├── docs/          # Project documentation
+└── screenshots/   # UI reference screenshots
+```
+
+The API runs on `http://localhost:5000` by default. The frontend runs on Vite's development port, normally `http://localhost:5173`.
+
+## Backend API
 
 ---
 
@@ -12,7 +28,7 @@ A production-ready **Healthcare Management** backend built with **Node.js, Expre
 | Framework      | Express 4                      |
 | Language       | TypeScript (strict mode)       |
 | Database       | PostgreSQL                     |
-| ORM            | Prisma 7 (`prisma.config.ts`)  |
+| ORM            | Prisma 6                       |
 | Auth           | JWT (`jsonwebtoken`)           |
 | Password hash  | bcrypt                         |
 | Validation     | Zod                            |
@@ -44,9 +60,8 @@ backend/
 │   ├── app.ts                  # Express app (middleware + route wiring)
 │   └── server.ts               # HTTP + Socket.IO bootstrap
 │
-├── package.json
+├── package.json                # Backend scripts and dependencies
 ├── tsconfig.json
-├── prisma.config.ts            # Prisma 7 config file (replaces package.json "prisma" key)
 ├── .env.example
 └── README.md
 ```
@@ -60,17 +75,43 @@ backend/
 
 ---
 
-## 1. Installation
+## Frontend
+
+The frontend is a React/Vite application with role-based layouts and routes for patients, doctors, and admins.
+
+```text
+frontend/src/
+├── components/     # Shared and feature components
+├── context/        # Authentication and theme state
+├── hooks/          # Reusable React hooks
+├── layouts/        # Patient, doctor, admin, and auth layouts
+├── pages/          # Role-specific screens
+├── routes/         # Private and role route guards
+├── services/       # Centralized API calls
+└── utils/          # Token, date, and UI helpers
+```
+
+Set `VITE_API_URL` when the API is not running at the default address:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+Authentication tokens are stored under `mediq_token` and the cached user under `mediq_user`. On startup, the frontend validates the token with `/auth/me`; it does not trust the cached user by itself.
+
+## Installation
+
+### Backend
 
 ```bash
-# 1. Unzip the project and move into it
-cd healthcare-backend
+# Move into the backend
+cd backend
 
-# 2. Install dependencies
 npm install
 
-# 3. Copy the example environment file and edit it
-cp .env.example .env
+# Windows PowerShell
+copy .env.example .env
+# macOS/Linux: cp .env.example .env
 ```
 
 Edit `.env` and set your PostgreSQL connection string:
@@ -80,15 +121,14 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/healthcare_db?schema
 JWT_SECRET=replace_with_a_long_random_string
 ```
 
-## 2. Database setup (Prisma)
+### Database setup (Prisma)
 
 ```bash
 # Generate the Prisma Client
 npm run prisma:generate
 
-# Create the database schema (creates tables via migrations)
+# Apply development migrations
 npm run prisma:migrate
-# -> you will be prompted for a migration name, e.g. "init"
 
 # (Optional but recommended) seed an Admin + sample Doctor + Department
 npm run seed
@@ -103,7 +143,7 @@ Seeded accounts (from `prisma/seed.ts`):
 
 > Doctors and Admins **cannot self-register** — only Patients can register via `POST /api/auth/register`. The first Admin must be seeded (as above) or inserted directly into the database; that Admin then creates all further Doctor accounts through the API.
 
-## 3. Run the project
+### Run the backend
 
 ```bash
 # Development (auto-reload via tsx)
@@ -116,6 +156,23 @@ npm start
 
 The API will start on `http://localhost:5000` (configurable via `PORT` in `.env`).
 Health check: `GET http://localhost:5000/health`
+
+### Run the frontend
+
+In a second terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+For a production frontend build:
+
+```bash
+npm run build
+npm run preview
+```
 
 ---
 
@@ -262,16 +319,15 @@ POST /api/payments/<appointmentId>/pay
 ```json
 {
   "success": true,
-  "message": "Payment successful, token generated",
+  "message": "Payment successful, appointment confirmed",
   "data": {
     "payment": { "status": "SUCCESS", "amount": "800", "method": "UPI" },
-    "queueEntry": { "tokenNumber": 3, "status": "WAITING" },
     "qrCode": "data:image/png;base64,....",
     "checkInCode": "b3f1b0e0-...."
   }
 }
 ```
-Only a `SUCCESS` payment moves the appointment to `PAID` and issues a queue token. The `qrCode` encodes the `checkInCode`, to be scanned at the clinic.
+Only a `SUCCESS` payment moves the appointment to `PAID` and returns the backend-generated QR code and check-in code. Queue entry creation occurs when the paid appointment is checked in.
 
 ### Queue Management
 | Method | Endpoint | Auth | Notes |
@@ -309,6 +365,30 @@ Only a `SUCCESS` payment moves the appointment to `PAID` and issues a queue toke
 | GET | `/dashboard/admin` | Admin | totals, revenue, appointments by status, upcoming leaves |
 | GET | `/dashboard/doctor` | Doctor | today's queue, patients seen, upcoming appointments, leaves |
 | GET | `/dashboard/patient` | Patient | upcoming/past appointments, unread notifications |
+
+## Frontend integration status
+
+The frontend currently uses the backend API for:
+
+- Authentication persistence and role routing
+- Doctor discovery and doctor details
+- Appointment creation, listing, cancellation, and status display
+- Mock payment confirmation and backend-generated QR codes
+- Patient QR check-in
+- Doctor queue reads and queue status updates
+- Notifications and individual read actions
+- Patient/admin/doctor patient lists
+- Admin dashboard totals and revenue
+
+The following areas remain intentionally limited until matching backend contracts are available:
+
+- Medical records and lab results
+- Full user management and reporting endpoints
+- Doctor schedule and leave screens
+- Browser camera QR scanning
+- Frontend Socket.IO subscription for live queue updates
+
+The frontend does not duplicate backend authorization or appointment business rules. Client-side route guards are for navigation only; the API remains the security boundary.
 
 ---
 
@@ -368,5 +448,5 @@ Import [`Healthcare.postman_collection.json`](./Healthcare.postman_collection.js
 
 - Payments are **fully mocked** — `POST /payments/:appointmentId/pay` always succeeds (no external gateway).
 - QR check-in uses a UUID `checkInCode` stored on each `Appointment`; `qrcode` renders it as a base64 PNG at payment time.
-- Prisma 7's config is expressed in `prisma.config.ts` rather than a `"prisma"` key in `package.json`.
+- The current backend uses Prisma 6 with the schema and migrations under `backend/prisma/`.
 - Soft-delete pattern is used for Doctors/Patients (`isActive = false`) to preserve appointment/payment history instead of hard-deleting.

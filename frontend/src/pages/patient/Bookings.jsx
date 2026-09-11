@@ -10,6 +10,7 @@ import './Bookings.css';
 
 const statusFilters = ['All', 'Upcoming', 'Completed'];
 const ALL_MONTHS = 'All Months';
+const upcomingStatuses = ['PENDING', 'PAID'];
 
 const getMonthLabel = (dateStr) => {
   const d = new Date(dateStr);
@@ -54,18 +55,20 @@ function Bookings() {
   }, [appointments]);
 
   const filteredAppointments = appointments.filter((appointment) => {
-    const statusMatch = statusFilter === 'All' || appointment.status === statusFilter;
+    const statusMatch = statusFilter === 'All'
+      || (statusFilter === 'Upcoming' && upcomingStatuses.includes(appointment.status))
+      || (statusFilter === 'Completed' && appointment.status === 'COMPLETED');
     const monthMatch = monthFilter === ALL_MONTHS || getMonthLabel(appointment.date) === monthFilter;
     return statusMatch && monthMatch;
   });
 
-  const upcomingCount = appointments.filter((appointment) => appointment.status === 'Upcoming').length;
-  const completedCount = appointments.filter((appointment) => appointment.status === 'Completed').length;
+  const upcomingCount = appointments.filter((appointment) => upcomingStatuses.includes(appointment.status)).length;
+  const completedCount = appointments.filter((appointment) => appointment.status === 'COMPLETED').length;
 
   const handleCancel = async (id) => {
     const updated = await cancelAppointment(id);
     setAppointments((prev) => prev.map((appointment) => (
-      appointment.id === id ? { ...appointment, status: updated?.status || 'Cancelled' } : appointment
+      appointment.id === id ? { ...appointment, ...updated } : appointment
     )));
   };
 
@@ -145,12 +148,12 @@ function Bookings() {
         ) : (
           <div className="bookings-list">
             {filteredAppointments.map((appointment) => {
-              const showCheckIn = appointment.status === 'Upcoming' && isToday(appointment.date);
+              const showCheckIn = appointment.status === 'PAID' && isToday(appointment.date);
               return (
                 <AppointmentCard
                   key={appointment.id}
                   appointment={appointment}
-                  onCancel={appointment.status === 'Upcoming' ? handleCancel : undefined}
+                  onCancel={upcomingStatuses.includes(appointment.status) ? handleCancel : undefined}
                   onCheckIn={showCheckIn ? () => navigate('/patient/checkin', { state: { appointment } }) : undefined}
                 />
               );

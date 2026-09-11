@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
 import { getPatientAppointments, cancelAppointment } from '../../services/appointment';
-import { getPatientQueue } from '../../services/queue';
 import './Home.css';
 
 function Home() {
@@ -16,12 +15,12 @@ function Home() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [appts, q] = await Promise.all([
-          getPatientAppointments(user?.id || 1),
-          getPatientQueue(user?.id || 1),
-        ]);
-        setAppointments(appts.filter((a) => a.status === 'Upcoming'));
-        setQueue(q);
+        const appts = await getPatientAppointments();
+        const upcomingStatuses = ['PENDING', 'PAID', 'CHECKED_IN', 'IN_PROGRESS'];
+        setAppointments(appts.filter((appointment) => upcomingStatuses.includes(appointment.status)));
+        setQueue(appts
+          .filter((appointment) => appointment.queueEntry)
+          .map((appointment) => ({ ...appointment.queueEntry, doctorName: appointment.doctorName })));
       } finally {
         setLoading(false);
       }
@@ -113,13 +112,15 @@ function Home() {
           </div>
 
           <div className="appt-actions">
-            <button
-              className="appt-checkin"
-              type="button"
-              onClick={() => navigate('/patient/checkin', { state: { appointment: nextAppointment } })}
-            >
-              Check-in
-            </button>
+            {nextAppointment.status === 'PAID' && (
+              <button
+                className="appt-checkin"
+                type="button"
+                onClick={() => navigate('/patient/checkin', { state: { appointment: nextAppointment } })}
+              >
+                Check-in
+              </button>
+            )}
             <button className="appt-directions" type="button" aria-label="Get directions">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 11l17-8-8 17-2-7-7-2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>
             </button>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
 import Button from '../../components/common/Button';
 import Loader from '../../components/common/Loader';
@@ -16,7 +15,6 @@ const SLOT_GROUPS = [
 
 function BookAppointment() {
   const { id } = useParams();
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,24 +27,17 @@ function BookAppointment() {
     getDoctorById(id).then((d) => { setDoctor(d); setLoading(false); });
   }, [id]);
 
-  
-
   const handleBook = async () => {
     if (!selectedDate || !selectedTime) return alert('Please select date and time');
     setBooking(true);
     try {
-      const appt = await bookAppointment({
+      const appointment = await bookAppointment({
         doctorId: doctor.id,
-        doctorName: doctor.name,
-        specialty: doctor.specialty,
-        patientId: user?.id || 1,
-        patientName: user?.name || 'Patient',
-        date: selectedDate,
-        time: selectedTime,
-        notes,
-        fee: doctor.fee,
+        appointmentDate: selectedDate,
+        timeSlot: selectedTime,
+        reason: notes,
       });
-      navigate('/patient/booking-success', { state: { appointment: appt } });
+      navigate('/patient/booking-success', { state: { appointment } });
     } finally {
       setBooking(false);
     }
@@ -91,14 +82,14 @@ function BookAppointment() {
             <div key={group.title} className="slot-group">
               <h4 className="slot-group__heading">{group.title}</h4>
               <div className="slot-grid">
-                {group.slots.map((t) => (
+                {group.slots.map((timeSlot) => (
                   <button
-                    key={t}
-                    className={`time-slot ${selectedTime === t ? 'time-slot--active' : ''}`}
-                    onClick={() => setSelectedTime(t)}
+                    key={timeSlot}
+                    className={`time-slot ${selectedTime === timeSlot ? 'time-slot--active' : ''}`}
+                    onClick={() => setSelectedTime(timeSlot)}
                     type="button"
                   >
-                    {t}
+                    {timeSlot}
                   </button>
                 ))}
               </div>

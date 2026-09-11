@@ -279,7 +279,9 @@ export const cancelAppointment = async (
 
   if (
     appointment.status === 'COMPLETED' ||
-    appointment.status === 'CANCELLED'
+    appointment.status === 'CANCELLED' ||
+    appointment.status === 'CHECKED_IN' ||
+    appointment.status === 'IN_PROGRESS'
   ) {
     throw ApiError.badRequest(
       `Cannot cancel an appointment that is already ${appointment.status}`,

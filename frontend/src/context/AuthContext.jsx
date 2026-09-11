@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { login as loginService, register as registerService, logout as logoutService } from '../services/auth';
-import { getUser } from '../utils/token';
+import { login as loginService, register as registerService, getMe, logout as logoutService } from '../services/auth';
+import { getToken } from '../utils/token';
 
 const AuthContext = createContext(null);
 
@@ -9,9 +9,25 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = getUser();
-    if (savedUser) setUser(savedUser);
-    setLoading(false);
+    const restoreSession = async () => {
+      if (!getToken()) {
+        logoutService();
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const currentUser = await getMe();
+        setUser(currentUser);
+      } catch {
+        logoutService();
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    restoreSession();
   }, []);
 
   const login = async (email, password) => {

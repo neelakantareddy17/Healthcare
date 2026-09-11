@@ -1,22 +1,60 @@
-import { sleep } from '../utils/helpers';
+import api from './api';
 
-let MOCK_QUEUE = [
-  { id: 1, doctorId: 1, doctorName: 'Dr. Priya Nair', specialty: 'Cardiologist', patientId: 1, patientName: 'Arjun Sharma', tokenNumber: 14, currentToken: 10, status: 'Waiting', estimatedWait: '20 mins' },
-];
+const normalizeQueue = (entries) => {
+  const currentToken = entries.find((entry) => entry.status === 'IN_PROGRESS')?.tokenNumber || 0;
+  const statusPriority = { COMPLETED: 0, IN_PROGRESS: 1, WAITING: 2, SKIPPED: 3 };
+  const normalized = entries.map((entry) => ({
+    ...entry,
+    patientName: entry.appointment?.patient?.user?.name || 'Patient',
+    symptoms: entry.appointment?.reason || '',
+    doctorName: 'Your queue',
+    specialty: '',
+    currentToken,
+    estimatedWait: null,
+  }));
 
-export const getPatientQueue = async (patientId) => {
-  await sleep(500);
-  return MOCK_QUEUE.filter((q) => q.patientId === Number(patientId));
+  return normalized.sort((left, right) => {
+    const priorityDifference = statusPriority[left.status] - statusPriority[right.status];
+    if (priorityDifference !== 0) return priorityDifference;
+
+    if (left.status === 'COMPLETED') {
+      return new Date(right.updatedAt) - new Date(left.updatedAt);
+    }
+
+    if (left.status === 'IN_PROGRESS') {
+      return new Date(right.updatedAt) - new Date(left.updatedAt);
+    }
+
+    return left.tokenNumber - right.tokenNumber;
+  });
 };
 
-export const getDoctorQueue = async (doctorId) => {
-  await sleep(500);
-  return MOCK_QUEUE.filter((q) => q.doctorId === Number(doctorId));
+export const getPatientQueue = async (queueId) => {
+  if (!queueId) return null;
+  const response = await api.get(`/queue/${queueId}`);
+  return response.data.data;
 };
 
-export const callNextToken = async (doctorId) => {
-  await sleep(400);
-  const items = MOCK_QUEUE.filter((q) => q.doctorId === Number(doctorId));
-  items.forEach((q) => { q.currentToken = q.currentToken + 1; });
-  return items;
+export const getDoctorQueue = async (params = {}) => {
+  const response = await api.get('/queue/my-queue', { params });
+  return normalizeQueue(response.data.data);
+};
+
+export const updateQueueStatus = async (id, status) => {
+  const response = await api.put(`/queue/${id}/status`, { status });
+  return response.data.data;
+};
+
+export const callNextToken = async () => {
+  const queue = await getDoctorQueue();
+  if (queue.some((entry) => entry.status === 'IN_PROGRESS')) return queue;
+  const next = queue.find((entry) => entry.status === 'WAITING');
+  if (!next) return queue;
+  await updateQueueStatus(next.id, 'IN_PROGRESS');
+  return getDoctorQueue();
+};
+
+export const checkIn = async (checkInCode) => {
+  const response = await api.post('/queue/check-in', { checkInCode });
+  return response.data.data;
 };

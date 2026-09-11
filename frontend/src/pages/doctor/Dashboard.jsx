@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import DoctorLayout from '../../layouts/DoctorLayout';
 import Loader from '../../components/common/Loader';
 import { getDoctorAppointments } from '../../services/appointment';
-import { getDoctorQueue, callNextToken } from '../../services/queue';
+import { getDoctorQueue, callNextToken, updateQueueStatus } from '../../services/queue';
 import './Dashboard.css';
 
 function DoctorDashboard() {
@@ -12,12 +12,13 @@ function DoctorDashboard() {
   const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
   const [calling, setCalling] = useState(false);
+  const [completing, setCompleting] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       const [appts, q] = await Promise.all([
-        getDoctorAppointments(user?.id || 2),
-        getDoctorQueue(user?.id || 2),
+        getDoctorAppointments(),
+        getDoctorQueue(),
       ]);
       setAppointments(appts);
       setQueue(q);
@@ -28,13 +29,26 @@ function DoctorDashboard() {
 
   const handleCallNext = async () => {
     setCalling(true);
-    const updated = await callNextToken(user?.id || 2);
+    const updated = await callNextToken();
     setQueue(updated);
     setCalling(false);
   };
 
-  const upcoming = appointments.filter((a) => a.status === 'Upcoming').length;
-  const completed = appointments.filter((a) => a.status === 'Completed').length;
+  const handleComplete = async () => {
+    const current = queue.find((entry) => entry.status === 'IN_PROGRESS');
+    if (!current) return;
+    setCompleting(true);
+    try {
+      await updateQueueStatus(current.id, 'COMPLETED');
+      setQueue(await getDoctorQueue());
+    } finally {
+      setCompleting(false);
+    }
+  };
+
+  const upcoming = appointments.filter((a) => ['PENDING', 'PAID', 'CHECKED_IN', 'IN_PROGRESS'].includes(a.status)).length;
+  const completed = appointments.filter((a) => a.status === 'COMPLETED').length;
+  const inQueue = queue.filter((entry) => ['WAITING', 'IN_PROGRESS'].includes(entry.status)).length;
 
   return (
     <DoctorLayout>
@@ -57,7 +71,7 @@ function DoctorDashboard() {
           <span>Completed</span>
         </div>
         <div className="doc-stat-card doc-stat-card--orange">
-          <span className="doc-stat-card__num">{queue.length}</span>
+          <span className="doc-stat-card__num">{inQueue}</span>
           <span>In Queue</span>
         </div>
         <div className="doc-stat-card doc-stat-card--purple">
@@ -74,21 +88,27 @@ function DoctorDashboard() {
           <div className="queue-control">
             <div className="queue-control__current">
               <p className="queue-control__label">Now Serving</p>
-              <p className="queue-control__num">#{queue[0]?.currentToken}</p>
+              <p className="queue-control__num">#{queue.find((entry) => entry.status === 'IN_PROGRESS')?.tokenNumber || '-'}</p>
             </div>
             <div className="queue-control__next">
               <p className="queue-control__label">In Queue</p>
-              <p className="queue-control__count">{queue.length} patients</p>
+              <p className="queue-control__count">{inQueue} patients</p>
             </div>
             <button className="queue-next-btn" onClick={handleCallNext} disabled={calling}>
               {calling ? '...' : 'Next ›'}
             </button>
+            {queue.some((entry) => entry.status === 'IN_PROGRESS') && (
+              <button className="queue-next-btn" onClick={handleComplete} disabled={completing}>
+                {completing ? '...' : 'Complete'}
+              </button>
+            )}
           </div>
           <div className="queue-list">
             {queue.map((q) => (
               <div key={q.id} className="queue-list-item">
                 <span>#{q.tokenNumber}</span>
                 <span>{q.patientName}</span>
+                <span>{q.symptoms || 'No symptoms provided'}</span>
                 <span className="queue-list-status">{q.status}</span>
               </div>
             ))}

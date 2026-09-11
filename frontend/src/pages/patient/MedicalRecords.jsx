@@ -13,7 +13,7 @@ function MedicalRecords() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getMedicalRecords(user?.id || 1).then((r) => { setRecords(r); setLoading(false); });
+    getMedicalRecords().then((r) => { setRecords(r); setLoading(false); });
   }, [user]);
 
   const typeIcon = { Report: '📊', Prescription: '💊', 'Lab Report': '🧪' };

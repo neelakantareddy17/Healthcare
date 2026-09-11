@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
-import { getNotifications, markAllRead } from '../../services/notification';
+import { getNotifications, markNotificationRead } from '../../services/notification';
 import './Notifications.css';
 
 function Notifications() {
@@ -12,12 +12,14 @@ function Notifications() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getNotifications(user?.id).then((n) => { setNotifs(n); setLoading(false); });
+    getNotifications().then((notifications) => { setNotifs(notifications); setLoading(false); });
   }, [user]);
 
   const handleMarkAll = async () => {
-    const updated = await markAllRead();
-    setNotifs(updated);
+    const unread = notifs.filter((notification) => !notification.read);
+    const updated = await Promise.all(unread.map((notification) => markNotificationRead(notification.id)));
+    const updatedById = new Map(updated.map((notification) => [notification.id, notification]));
+    setNotifs((current) => current.map((notification) => updatedById.get(notification.id) || notification));
   };
 
   const typeIcon = { appointment: '📅', queue: '🎫', reminder: '⏰', record: '📋' };

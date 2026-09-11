@@ -1,4 +1,4 @@
-import { emitToDoctorQueue } from './index.js';
+import { emitToDoctorQueue, emitToUser } from './index.js';
 
 /**
  * Broadcasts a live queue update to every client subscribed to a doctor's queue room.
@@ -6,6 +6,10 @@ import { emitToDoctorQueue } from './index.js';
  */
 export const broadcastQueueUpdate = (doctorId: string, queueSnapshot: unknown) => {
   emitToDoctorQueue(doctorId, 'queue:update', queueSnapshot);
+};
+
+export const broadcastPatientQueueUpdate = (userId: string, payload: unknown) => {
+  emitToUser(userId, 'queue:update', payload);
 };
 
 export const broadcastTokenCalled = (doctorId: string, tokenNumber: number) => {

@@ -1,7 +1,7 @@
 import { prisma } from '../config/db.js';
 import { ApiError } from '../utils/ApiError.js';
 import { startOfDay, endOfDay } from '../utils/date.js';
-import { broadcastQueueUpdate } from '../socket/queue.socket.js';
+import { broadcastPatientQueueUpdate, broadcastQueueUpdate } from '../socket/queue.socket.js';
 import { createNotification } from './notification.service.js';
 
 /**
@@ -127,6 +127,10 @@ export const checkInAppointment = async (checkInCode: string) => {
   const snapshot = await getDoctorQueueForToday(appointment.doctorId);
 
   broadcastQueueUpdate(appointment.doctorId, snapshot);
+  broadcastPatientQueueUpdate(appointment.patient.userId, {
+    queueEntry,
+    appointmentStatus: updated.status,
+  });
 
   return {
     appointment: updated,
@@ -182,22 +186,20 @@ export const updateQueueEntryStatus = async (
     );
   }
 
+  const appointmentStatusMap: Record<
+    string,
+    'IN_PROGRESS' | 'COMPLETED' | undefined
+  > = {
+    IN_PROGRESS: 'IN_PROGRESS',
+    COMPLETED: 'COMPLETED',
+  };
+  const nextAppointmentStatus = appointmentStatusMap[status];
+
   const updated = await prisma.$transaction(async (tx) => {
     const entry = await tx.queueEntry.update({
       where: { id: queueEntryId },
       data: { status },
     });
-
-    const appointmentStatusMap: Record<
-      string,
-      'IN_PROGRESS' | 'COMPLETED' | undefined
-    > = {
-      IN_PROGRESS: 'IN_PROGRESS',
-      COMPLETED: 'COMPLETED',
-    };
-
-    const nextAppointmentStatus =
-      appointmentStatusMap[status];
 
     if (nextAppointmentStatus) {
       await tx.appointment.update({
@@ -219,6 +221,10 @@ export const updateQueueEntryStatus = async (
     queueEntry.doctorId,
     snapshot,
   );
+  broadcastPatientQueueUpdate(queueEntry.appointment.patient.userId, {
+    queueEntry: updated,
+    appointmentStatus: nextAppointmentStatus || queueEntry.appointment.status,
+  });
 
   if (status === 'IN_PROGRESS') {
     await createNotification({
@@ -293,5 +299,33 @@ export const getQueueEntryById = async (
     );
   }
 
-  return entry;
+  if (role !== 'PATIENT') {
+    return entry;
+  }
+
+  const [currentEntry, patientsAhead] = await Promise.all([
+    prisma.queueEntry.findFirst({
+      where: {
+        doctorId: entry.doctorId,
+        date: entry.date,
+        status: 'IN_PROGRESS',
+      },
+      orderBy: { tokenNumber: 'asc' },
+      select: { tokenNumber: true },
+    }),
+    prisma.queueEntry.count({
+      where: {
+        doctorId: entry.doctorId,
+        date: entry.date,
+        tokenNumber: { lt: entry.tokenNumber },
+        status: { in: ['WAITING', 'IN_PROGRESS'] },
+      },
+    }),
+  ]);
+
+  return {
+    ...entry,
+    currentToken: currentEntry?.tokenNumber ?? 0,
+    patientsAhead,
+  };
 };
