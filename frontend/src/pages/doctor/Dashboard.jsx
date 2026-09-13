@@ -115,8 +115,10 @@ function DoctorDashboard() {
             {activeQueue.map((q) => (
               <div key={q.id} className="queue-list-item">
                 <span>#{q.tokenNumber}</span>
-                <span>{q.patientName}</span>
-                <span>{q.symptoms || 'No symptoms provided'}</span>
+                <div className="queue-list-item__patient">
+                  <strong>{q.patientName}</strong>
+                  <span className="queue-list-item__symptoms">{q.symptoms || 'No symptoms provided'}</span>
+                </div>
                 <span className="queue-list-status">{q.status}</span>
               </div>
             ))}
@@ -131,6 +133,7 @@ function DoctorDashboard() {
           <div>
             <p className="doc-appt-patient">{a.patientName}</p>
             <p className="doc-appt-time">{a.time}</p>
+            <p className="doc-appt-symptoms">Symptoms: {a.symptoms || 'Not provided'}</p>
           </div>
           <span className={`doc-appt-status doc-appt-status--${a.status.toLowerCase()}`}>{a.status}</span>
         </div>

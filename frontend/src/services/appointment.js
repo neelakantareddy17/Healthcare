@@ -11,6 +11,8 @@ const statusLabels = {
 
 const normalizeAppointment = (appointment) => ({
   ...appointment,
+  patientName: appointment.patient?.user?.name || 'Patient',
+  symptoms: appointment.reason || '',
   doctorName: appointment.doctor?.user?.name || 'Doctor',
   specialty: appointment.doctor?.specialization || appointment.doctor?.department?.name || '',
   date: appointment.appointmentDate,

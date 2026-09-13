@@ -1,5 +1,5 @@
 .doc-dashboard-banner {
-  background: linear-gradient(135deg, #0B6B63, #068072);
+  background: linear-gradient(135deg, #0f4c5c, #176b73);
   border-radius: 24px; padding: 24px; color: #fff;
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 20px;
@@ -17,10 +17,10 @@
 }
 .doc-stat-card__num { font-size: 32px; font-weight: 800; }
 .doc-stat-card span:last-child { font-size: 13px; font-weight: 600; opacity: 0.85; }
-.doc-stat-card--blue { background: #dbeafe; color: #1d4ed8; }
-.doc-stat-card--green { background: #dcfce7; color: #15803d; }
-.doc-stat-card--orange { background: #fef9c3; color: #b45309; }
-.doc-stat-card--purple { background: #f3e8ff; color: #7c3aed; }
+.doc-stat-card--blue { background: #e1f0f5; color: #0f4c5c; }
+.doc-stat-card--green { background: #e3f3ee; color: #176b5b; }
+.doc-stat-card--orange { background: #fff1dc; color: #a35416; }
+.doc-stat-card--purple { background: #e8edf5; color: #3b536f; }
 
 .section-title { font-size: 18px; font-weight: 800; margin-bottom: 14px; }
 
@@ -47,6 +47,8 @@
 }
 .queue-list-item:last-child { border-bottom: none; }
 .queue-list-item span:first-child { font-weight: 700; color: var(--primary); }
+.queue-list-item__patient { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.queue-list-item__symptoms { color: var(--text-light); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .queue-list-status { font-size: 12px; background: var(--primary-soft); color: var(--primary); padding: 3px 10px; border-radius: 10px; font-weight: 600; }
 
 .doc-appt-item {
@@ -57,6 +59,7 @@
 .doc-appt-token { font-size: 18px; font-weight: 800; color: var(--primary); min-width: 40px; }
 .doc-appt-patient { font-size: 15px; font-weight: 600; }
 .doc-appt-time { font-size: 13px; color: var(--text-light); }
+.doc-appt-symptoms { font-size: 12px; color: var(--text-light); margin-top: 4px; }
 .doc-appt-status { margin-left: auto; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 10px; }
 .doc-appt-status--upcoming { background: #dbeafe; color: #1d4ed8; }
 .doc-appt-status--completed { background: #dcfce7; color: #15803d; }
