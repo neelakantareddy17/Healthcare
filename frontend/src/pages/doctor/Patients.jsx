@@ -17,7 +17,7 @@ function Patients() {
     <DoctorLayout>
       <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20 }}>My Patients</h2>
       {loading ? <Loader /> : patients.length === 0 ? (
-        <EmptyState icon="👥" title="No patients found" />
+        <EmptyState icon="users" title="No patients found" />
       ) : (
         patients.map((p) => (
           <div key={p.id} style={{ background: '#fff', borderRadius: 18, padding: 16, marginBottom: 12, boxShadow: '0 4px 14px rgba(0,0,0,0.06)', display: 'flex', gap: 14, alignItems: 'center' }}>

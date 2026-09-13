@@ -3,6 +3,7 @@ import AdminLayout from '../../layouts/AdminLayout';
 import Loader from '../../components/common/Loader';
 import { getDoctors } from '../../services/doctor';
 import Badge from '../../components/common/Badge';
+import Icon from '../../components/common/Icon';
 import { getInitials } from '../../utils/helpers';
 
 function Doctors() {
@@ -21,7 +22,7 @@ function Doctors() {
           <div style={{ flex: 1 }}>
             <p style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>{d.name}</p>
             <p style={{ fontSize: 13, color: 'var(--primary)', fontWeight: 600, marginBottom: 2 }}>{d.specialty}</p>
-            <p style={{ fontSize: 12, color: 'var(--text-light)' }}>⭐ {d.rating} • {d.hospital}</p>
+            <p style={{ fontSize: 12, color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: 4 }}><Icon name="star" size={13} /> {d.rating} • {d.hospital}</p>
           </div>
           <Badge label={d.available ? 'Active' : 'Inactive'} type={d.available ? 'success' : 'danger'} />
         </div>

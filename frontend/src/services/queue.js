@@ -45,13 +45,13 @@ export const updateQueueStatus = async (id, status) => {
   return response.data.data;
 };
 
-export const callNextToken = async () => {
-  const queue = await getDoctorQueue();
+export const callNextToken = async (params = {}) => {
+  const queue = await getDoctorQueue(params);
   if (queue.some((entry) => entry.status === 'IN_PROGRESS')) return queue;
   const next = queue.find((entry) => entry.status === 'WAITING');
   if (!next) return queue;
   await updateQueueStatus(next.id, 'IN_PROGRESS');
-  return getDoctorQueue();
+  return getDoctorQueue(params);
 };
 
 export const checkIn = async (checkInCode) => {

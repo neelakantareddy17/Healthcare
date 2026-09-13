@@ -30,8 +30,7 @@ function QueueStatus() {
       const appointments = knownAppointments || await getPatientAppointments();
       const appointment = queueId
         ? appointments.find((item) => item.queueEntry?.id === queueId)
-        : appointments.find((item) => item.queueEntry && ['CHECKED_IN', 'IN_PROGRESS'].includes(item.status))
-          || appointments.find((item) => item.queueEntry);
+        : appointments.find((item) => item.queueEntry && ['CHECKED_IN', 'IN_PROGRESS'].includes(item.status));
       const selectedQueueId = queueId || appointment?.queueEntry?.id;
 
       if (!selectedQueueId) {
@@ -41,6 +40,11 @@ function QueueStatus() {
 
       const entry = await getPatientQueue(selectedQueueId);
       if (!active) return;
+
+      if (['COMPLETED', 'SKIPPED'].includes(entry.status)) {
+        setQueue(null);
+        return;
+      }
 
       setQueue(entry);
       const doctorId = appointment?.doctorId || entry.doctorId;
@@ -70,7 +74,7 @@ function QueueStatus() {
 
   if (loading) return <PatientLayout><Loader /></PatientLayout>;
   if (error) return <PatientLayout><p role="alert">{error}</p></PatientLayout>;
-  if (!queue) return <PatientLayout><EmptyState icon="🎫" title="No active queue" description="Your queue status will appear after you check in." /></PatientLayout>;
+  if (!queue) return <PatientLayout><EmptyState icon="queue" title="No active queue" description="Your queue status will appear after you check in." /></PatientLayout>;
 
   const status = statusLabels[queue.status] || queue.status;
   const currentToken = queue.currentToken || 0;

@@ -59,6 +59,16 @@
   background: #eef1f2;
 }
 
+.pl-header__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .pl-content {
   flex: 1;
   padding: 20px 18px 90px;

@@ -4,6 +4,7 @@ import PatientLayout from '../../layouts/PatientLayout';
 import Button from '../../components/common/Button';
 import Loader from '../../components/common/Loader';
 import Badge from '../../components/common/Badge';
+import Icon from '../../components/common/Icon';
 import { getDoctorById } from '../../services/doctor';
 import { getInitials } from '../../utils/helpers';
 import './DoctorDetails.css';
@@ -46,11 +47,11 @@ function DoctorDetails() {
 
       <div className="doc-info-card">
         <h3>Hospital</h3>
-        <p>🏥 {doctor.hospital}, {doctor.city}</p>
+        <p><Icon name="mapPin" size={17} /> {doctor.hospital}, {doctor.city}</p>
       </div>
 
       <div className="ai-reco">
-        <span>🤖</span>
+        <Icon name="activity" size={22} />
         <div>
           <p className="ai-reco__title">AI Match Score: 94%</p>
           <p className="ai-reco__text">Highly recommended based on your health profile and location.</p>

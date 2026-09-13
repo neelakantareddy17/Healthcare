@@ -3,33 +3,36 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 72px;
-  background: #fff;
+  min-height: 76px;
+  background: rgba(255, 255, 255, 0.96);
   display: flex;
   justify-content: space-around;
   align-items: center;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
   z-index: 100;
-  padding: 0 8px;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  backdrop-filter: blur(14px);
 }
 
 .bottom-nav__item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  padding: 8px 12px;
-  border-radius: 14px;
+  gap: 4px;
+  padding: 7px 12px 6px;
+  border-radius: 15px;
   text-decoration: none;
   transition: var(--transition);
-  min-width: 54px;
+  min-width: 58px;
+  color: var(--text-light);
 }
 
 .bottom-nav__item--active {
   background: var(--primary-soft);
+  color: var(--primary);
 }
 
-.bottom-nav__icon { font-size: 22px; }
+.bottom-nav__icon { display: grid; place-items: center; }
 
 .bottom-nav__label {
   font-size: 11px;

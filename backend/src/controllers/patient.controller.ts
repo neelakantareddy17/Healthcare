@@ -34,6 +34,10 @@ export const getPatientById = asyncHandler(
     const patient =
       await patientService.getPatientById(id);
 
+    if (req.user!.role === 'PATIENT' && patient.userId !== req.user!.userId) {
+      throw ApiError.forbidden('You can only view your own profile');
+    }
+
     return ApiResponse.ok(
       res,
       'Patient fetched',

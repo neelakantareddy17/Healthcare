@@ -1,4 +1,5 @@
 import Badge from '../common/Badge';
+import Icon from '../common/Icon';
 import { formatDate, formatTime } from '../../utils/formatDate';
 import './AppointmentCard.css';
 
@@ -23,11 +24,11 @@ function AppointmentCard({ appointment, onCancel, onCheckIn, onComplete }) {
       </div>
       <div className="appt-card__info">
         <div className="appt-card__info-item">
-          <span>📅</span>
+          <Icon name="calendar" size={17} />
           <span>{formatDate(appointment.date)}</span>
         </div>
         <div className="appt-card__info-item">
-          <span>🕐</span>
+          <Icon name="clock" size={17} />
           <span>{appointment.time}</span>
         </div>
       </div>

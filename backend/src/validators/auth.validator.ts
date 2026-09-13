@@ -9,6 +9,7 @@ export const registerSchema = z.object({
   gender: z.enum(['MALE', 'FEMALE', 'OTHER']).optional(),
   address: z.string().optional(),
   bloodGroup: z.string().optional(),
+  avatarId: z.enum(['sage', 'ocean', 'coral', 'lavender', 'sunrise']).optional(),
 });
 
 export const loginSchema = z.object({

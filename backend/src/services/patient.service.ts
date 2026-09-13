@@ -51,6 +51,7 @@ interface UpdatePatientInput {
   gender?: 'MALE' | 'FEMALE' | 'OTHER';
   address?: string;
   bloodGroup?: string;
+  avatarId?: 'sage' | 'ocean' | 'coral' | 'lavender' | 'sunrise';
 }
 
 export const updatePatient = async (id: string, data: UpdatePatientInput) => {

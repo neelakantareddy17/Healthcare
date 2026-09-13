@@ -6,6 +6,7 @@ import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
 import { getDoctorQueue, callNextToken, updateQueueStatus } from '../../services/queue';
 import Button from '../../components/common/Button';
+import { getLocalDateInputValue } from '../../utils/date';
 
 function QueueManagement() {
   const { user } = useAuth();
@@ -15,12 +16,12 @@ function QueueManagement() {
   const [completing, setCompleting] = useState(false);
 
   useEffect(() => {
-    getDoctorQueue().then((q) => { setQueue(q); setLoading(false); });
+    getDoctorQueue({ date: getLocalDateInputValue() }).then((q) => { setQueue(q); setLoading(false); });
   }, [user]);
 
   const handleNext = async () => {
     setCalling(true);
-    const updated = await callNextToken();
+    const updated = await callNextToken({ date: getLocalDateInputValue() });
     setQueue(updated);
     setCalling(false);
   };
@@ -29,7 +30,7 @@ function QueueManagement() {
     setCompleting(true);
     try {
       await updateQueueStatus(queueId, 'COMPLETED');
-      setQueue(await getDoctorQueue());
+      setQueue(await getDoctorQueue({ date: getLocalDateInputValue() }));
     } finally {
       setCompleting(false);
     }
@@ -38,15 +39,15 @@ function QueueManagement() {
   return (
     <DoctorLayout>
       <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 20 }}>Queue Management</h2>
-      {queue.length > 0 && (
+      {queue.some((entry) => ['WAITING', 'IN_PROGRESS'].includes(entry.status)) && (
         <div style={{ marginBottom: 20 }}>
-          <Button title={calling ? 'Calling...' : '📢 Call Next Patient'} onClick={handleNext} disabled={calling} />
+          <Button title={calling ? 'Calling...' : 'Call Next Patient'} onClick={handleNext} disabled={calling} />
         </div>
       )}
-      {loading ? <Loader /> : queue.length === 0 ? (
-        <EmptyState icon="🎫" title="No patients in queue" />
+      {loading ? <Loader /> : queue.filter((entry) => ['WAITING', 'IN_PROGRESS'].includes(entry.status)).length === 0 ? (
+        <EmptyState icon="queue" title="No patients in queue" />
       ) : (
-        queue.map((q) => (
+        queue.filter((entry) => ['WAITING', 'IN_PROGRESS'].includes(entry.status)).map((q) => (
           <QueueCard
             key={q.id}
             queue={q}

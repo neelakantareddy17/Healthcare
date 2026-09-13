@@ -2,13 +2,15 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  height: 70px;
-  background: #fff;
+  min-height: 70px;
+  background: rgba(255, 255, 255, 0.94);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(14px);
 }
 
 .navbar__logo {
@@ -35,7 +37,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  color: var(--primary);
   text-decoration: none;
   transition: var(--transition);
 }
@@ -49,7 +51,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  color: var(--danger);
   cursor: pointer;
   border: none;
   transition: var(--transition);

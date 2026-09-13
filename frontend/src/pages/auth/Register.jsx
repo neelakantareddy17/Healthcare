@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { AVATAR_OPTIONS } from '../../utils/avatar';
 import './Auth.css';
 
 function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', dob: '', gender: '', address: '', bloodGroup: '', avatarId: 'sage', password: '', confirmPassword: '' });
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,6 +31,10 @@ function Register() {
     setLoading(true);
     try {
       const { confirmPassword, ...payload } = form;
+      if (!payload.dob) delete payload.dob;
+      if (!payload.gender) delete payload.gender;
+      if (!payload.address) delete payload.address;
+      if (!payload.bloodGroup) delete payload.bloodGroup;
       await register(payload);
       navigate('/patient');
     } catch (err) {
@@ -118,6 +123,41 @@ function Register() {
               required
             />
           </div>
+
+          <div className="mq-form-grid">
+            <div>
+              <label className="mq-label mq-label--spaced" htmlFor="dob">Date of Birth</label>
+              <input id="dob" name="dob" type="date" value={form.dob} onChange={handleChange} className="mq-input mq-input--standalone" autoComplete="bday" />
+            </div>
+            <div>
+              <label className="mq-label mq-label--spaced" htmlFor="gender">Gender</label>
+              <select id="gender" name="gender" value={form.gender} onChange={handleChange} className="mq-input mq-input--standalone">
+                <option value="">Prefer not to say</option>
+                <option value="FEMALE">Female</option>
+                <option value="MALE">Male</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <label className="mq-label mq-label--spaced" htmlFor="address">Address</label>
+          <textarea id="address" name="address" value={form.address} onChange={handleChange} className="mq-input mq-input--standalone mq-textarea" rows={2} autoComplete="street-address" />
+
+          <label className="mq-label mq-label--spaced" htmlFor="bloodGroup">Blood Group (optional)</label>
+          <input id="bloodGroup" name="bloodGroup" value={form.bloodGroup} onChange={handleChange} className="mq-input mq-input--standalone" placeholder="e.g. O+" />
+
+          <fieldset className="mq-avatar-fieldset">
+            <legend className="mq-label mq-label--spaced">Choose an avatar</legend>
+            <div className="mq-avatar-options">
+              {AVATAR_OPTIONS.map((avatar) => (
+                <label key={avatar.id} className={`mq-avatar-option ${form.avatarId === avatar.id ? 'mq-avatar-option--selected' : ''}`}>
+                  <input type="radio" name="avatarId" value={avatar.id} checked={form.avatarId === avatar.id} onChange={handleChange} />
+                  <span style={{ background: avatar.background, color: avatar.color }}>{form.name ? form.name.slice(0, 1).toUpperCase() : 'P'}</span>
+                  <small>{avatar.label}</small>
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
           <label className="mq-label mq-label--spaced" htmlFor="password">Password</label>
           <div className="mq-input-wrap">

@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
+import Icon from '../../components/common/Icon';
 import { getPatientAppointments, cancelAppointment } from '../../services/appointment';
 import './Home.css';
 
 function Home() {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
+  const [allAppointments, setAllAppointments] = useState([]);
   const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,9 +19,10 @@ function Home() {
       try {
         const appts = await getPatientAppointments();
         const upcomingStatuses = ['PENDING', 'PAID', 'CHECKED_IN', 'IN_PROGRESS'];
+        setAllAppointments(appts);
         setAppointments(appts.filter((appointment) => upcomingStatuses.includes(appointment.status)));
         setQueue(appts
-          .filter((appointment) => appointment.queueEntry)
+          .filter((appointment) => appointment.queueEntry && upcomingStatuses.includes(appointment.status))
           .map((appointment) => ({ ...appointment.queueEntry, doctorName: appointment.doctorName })));
       } finally {
         setLoading(false);
@@ -57,11 +60,14 @@ function Home() {
     ) },
   ];
 
-  // TODO: wire to a real "recent activity" service when one exists
-  const recentActivity = [
-    { id: 1, title: 'Blood Panel Results', meta: 'May 12, 2024 • LabCorp' },
-    { id: 2, title: 'General Consultation', meta: 'Apr 28, 2024 • Dr. Miller' },
-  ];
+  const recentActivity = allAppointments
+    .filter((appointment) => appointment.status === 'COMPLETED')
+    .slice(0, 3)
+    .map((appointment) => ({
+      id: appointment.id,
+      title: appointment.specialty || 'Completed appointment',
+      meta: `${appointment.date || 'Date unavailable'} • ${appointment.doctorName}`,
+    }));
 
   return (
     <PatientLayout>
@@ -72,7 +78,7 @@ function Home() {
           <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
           <path d="M8 12l2.5 2.5L16 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        Your health status is looking stable today.
+        Your care dashboard is up to date.
       </p>
 
       {loading ? (
@@ -83,7 +89,7 @@ function Home() {
           <div className="appt-head">
             <div>
               <h3 className="appt-doctor">{nextAppointment.doctorName}</h3>
-              <p className="appt-specialty">{nextAppointment.specialty || 'General Physician'}</p>
+              <p className="appt-specialty">{nextAppointment.specialty || 'Specialty not provided'}</p>
             </div>
             {nextAppointment.doctorPhoto && (
               <img src={nextAppointment.doctorPhoto} alt={nextAppointment.doctorName} className="appt-photo" />
@@ -97,7 +103,7 @@ function Home() {
               </span>
               <div>
                 <p className="appt-detail__label">Date</p>
-                <p className="appt-detail__value">{nextAppointment.date || 'Today, 2:30 PM'}</p>
+                <p className="appt-detail__value">{nextAppointment.date || 'Date not provided'}</p>
               </div>
             </div>
             <div className="appt-detail">
@@ -106,7 +112,7 @@ function Home() {
               </span>
               <div>
                 <p className="appt-detail__label">Location</p>
-                <p className="appt-detail__value">{nextAppointment.location || 'Room 402, Block B'}</p>
+                <p className="appt-detail__value">{nextAppointment.location || 'Location not provided'}</p>
               </div>
             </div>
           </div>
@@ -128,7 +134,9 @@ function Home() {
         </div>
       ) : (
         <div className="home-empty">
-          <p>📅 No upcoming appointments</p>
+          <div className="home-empty__icon"><Icon name="calendar" size={24} /></div>
+          <h3>No upcoming appointments</h3>
+          <p>Keep your care on track by booking your next visit.</p>
           <Link to="/patient/find-doctor" className="home-book-btn">Book an Appointment</Link>
         </div>
       )}
@@ -160,23 +168,13 @@ function Home() {
         ))}
       </div>
 
-      <div className="insight-card">
-        <p className="insight-eyebrow">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l1.8 5.6L19 9l-5.2 1.4L12 16l-1.8-5.6L5 9l5.2-1.4L12 2z" fill="currentColor" /></svg>
-          MediQ AI Insight
-        </p>
-        <p className="insight-text">
-          Based on your last visit 11 months ago, it's time for your <strong>annual physical</strong>.
-        </p>
-        <Link to="/patient/find-doctor" className="insight-link">Schedule now →</Link>
-      </div>
-
-      <div className="activity-head">
-        <h3 className="section-title">Recent Activity</h3>
-        <Link to="/patient/medical-records" className="activity-viewall">View All</Link>
-      </div>
-      <div className="activity-list">
-        {recentActivity.map((item) => (
+      {recentActivity.length > 0 && <>
+        <div className="activity-head">
+          <h3 className="section-title">Recent Activity</h3>
+          <Link to="/patient/medical-records" className="activity-viewall">View All</Link>
+        </div>
+        <div className="activity-list">
+          {recentActivity.map((item) => (
           <div key={item.id} className="activity-item">
             <span className="activity-item__icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l4 4v14H7z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /><path d="M14 3v4h4" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>
@@ -187,8 +185,9 @@ function Home() {
             </div>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="activity-item__chevron"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </>}
     </PatientLayout>
   );
 }

@@ -1,6 +1,6 @@
 import { prisma } from '../config/db.js';
 import { ApiError } from '../utils/ApiError.js';
-import { startOfDay, endOfDay } from '../utils/date.js';
+import { isTimeSlotInPast, parseTimeSlotStart, startOfDay, endOfDay } from '../utils/date.js';
 import { createNotification } from './notification.service.js';
 
 interface CreateAppointmentInput {
@@ -47,11 +47,19 @@ export const createAppointment = async (
 
   const appointmentDay = startOfDay(input.appointmentDate);
 
+  if (Number.isNaN(appointmentDay.getTime()) || !parseTimeSlotStart(input.timeSlot)) {
+    throw ApiError.badRequest('Invalid appointment date or time slot');
+  }
+
   if (
     appointmentDay.getTime() <
     startOfDay(new Date()).getTime()
   ) {
     throw ApiError.badRequest('Cannot book an appointment in the past');
+  }
+
+  if (isTimeSlotInPast(appointmentDay, input.timeSlot)) {
+    throw ApiError.badRequest('Cannot book a time slot that has already passed');
   }
 
   await assertDoctorNotOnLeave(

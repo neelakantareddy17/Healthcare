@@ -1,4 +1,5 @@
 import './QueueCard.css';
+import Icon from '../common/Icon';
 
 function QueueCard({ queue, onComplete }) {
   const waiting = Math.max(queue.tokenNumber - (queue.currentToken || 0), 0);
@@ -10,7 +11,7 @@ function QueueCard({ queue, onComplete }) {
         <p className="queue-card__specialty">{queue.specialty}</p>
         <p className="queue-card__symptoms">Symptoms: {queue.symptoms || 'Not provided'}</p>
         <p className="queue-card__status">{queue.status}</p>
-        <p className="queue-card__wait">⏱ Est. wait: {queue.estimatedWait}</p>
+        <p className="queue-card__wait"><Icon name="clock" size={15} /> Est. wait: {queue.estimatedWait}</p>
         {queue.status === 'IN_PROGRESS' && onComplete && (
           <button type="button" onClick={onComplete}>Complete Treatment</button>
         )}

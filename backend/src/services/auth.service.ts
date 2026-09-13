@@ -37,6 +37,7 @@ export const registerPatient = async (input: RegisterInput) => {
           gender: input.gender ?? null,
           address: input.address ?? null,
           bloodGroup: input.bloodGroup ?? null,
+          avatarId: input.avatarId ?? null,
         },
       },
     },

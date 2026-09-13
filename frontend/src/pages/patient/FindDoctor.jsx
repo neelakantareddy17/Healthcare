@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
+import Icon from '../../components/common/Icon';
+import { getInitials } from '../../utils/helpers';
 // TODO: confirm these exports exist in services/doctor.js — adjust names if yours differ
 import { getDoctors } from '../../services/doctor';
 import './FindDoctor.css';
@@ -105,7 +107,11 @@ function FindDoctor() {
           {filtered.map((doc) => (
             <div key={doc.id} className="fd-doctor-card">
               <div className="fd-doctor-photo-wrap">
-                <img src={doc.photo} alt={doc.name} className="fd-doctor-photo" />
+                {doc.photo ? (
+                  <img src={doc.photo} alt={doc.name} className="fd-doctor-photo" />
+                ) : (
+                  <span className="fd-doctor-photo fd-doctor-photo--fallback">{getInitials(doc.name)}</span>
+                )}
                 <span className="fd-doctor-rating">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 16.9l-6.1 3.5 1.5-6.8L2.2 9l6.9-.7L12 2z" /></svg>
                   {doc.rating}

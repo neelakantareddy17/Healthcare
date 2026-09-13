@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import DoctorLayout from '../../layouts/DoctorLayout';
 import Loader from '../../components/common/Loader';
+import Icon from '../../components/common/Icon';
 import { getDoctorAppointments } from '../../services/appointment';
 import { getDoctorQueue, callNextToken, updateQueueStatus } from '../../services/queue';
+import { getLocalDateInputValue } from '../../utils/date';
 import './Dashboard.css';
 
 function DoctorDashboard() {
@@ -17,8 +19,8 @@ function DoctorDashboard() {
   useEffect(() => {
     const load = async () => {
       const [appts, q] = await Promise.all([
-        getDoctorAppointments(),
-        getDoctorQueue(),
+        getDoctorAppointments(undefined, { date: getLocalDateInputValue() }),
+        getDoctorQueue({ date: getLocalDateInputValue() }),
       ]);
       setAppointments(appts);
       setQueue(q);
@@ -29,7 +31,7 @@ function DoctorDashboard() {
 
   const handleCallNext = async () => {
     setCalling(true);
-    const updated = await callNextToken();
+    const updated = await callNextToken({ date: getLocalDateInputValue() });
     setQueue(updated);
     setCalling(false);
   };
@@ -40,7 +42,12 @@ function DoctorDashboard() {
     setCompleting(true);
     try {
       await updateQueueStatus(current.id, 'COMPLETED');
-      setQueue(await getDoctorQueue());
+      const [updatedQueue, updatedAppointments] = await Promise.all([
+        getDoctorQueue({ date: getLocalDateInputValue() }),
+        getDoctorAppointments(undefined, { date: getLocalDateInputValue() }),
+      ]);
+      setQueue(updatedQueue);
+      setAppointments(updatedAppointments);
     } finally {
       setCompleting(false);
     }
@@ -49,16 +56,17 @@ function DoctorDashboard() {
   const upcoming = appointments.filter((a) => ['PENDING', 'PAID', 'CHECKED_IN', 'IN_PROGRESS'].includes(a.status)).length;
   const completed = appointments.filter((a) => a.status === 'COMPLETED').length;
   const inQueue = queue.filter((entry) => ['WAITING', 'IN_PROGRESS'].includes(entry.status)).length;
+  const activeQueue = queue.filter((entry) => ['WAITING', 'IN_PROGRESS'].includes(entry.status));
 
   return (
     <DoctorLayout>
       <div className="doc-dashboard-banner">
         <div>
-          <p className="doc-dashboard-greeting">Good morning 👋</p>
+          <p className="doc-dashboard-greeting">Good morning</p>
           <h2 className="doc-dashboard-name">{user?.name || 'Doctor'}</h2>
           <p className="doc-dashboard-spec">{user?.specialty || 'Specialist'}</p>
         </div>
-        <div className="doc-dashboard-icon">🩺</div>
+        <div className="doc-dashboard-icon"><Icon name="doctor" size={30} /></div>
       </div>
 
       <div className="doc-stats-grid">
@@ -81,14 +89,14 @@ function DoctorDashboard() {
       </div>
 
       <h3 className="section-title">Queue Management</h3>
-      {loading ? <Loader /> : queue.length === 0 ? (
-        <div className="empty-queue">No active queue today 🎉</div>
+      {loading ? <Loader /> : activeQueue.length === 0 ? (
+        <div className="empty-queue"><Icon name="queue" size={20} /> No active queue today</div>
       ) : (
         <>
           <div className="queue-control">
             <div className="queue-control__current">
               <p className="queue-control__label">Now Serving</p>
-              <p className="queue-control__num">#{queue.find((entry) => entry.status === 'IN_PROGRESS')?.tokenNumber || '-'}</p>
+              <p className="queue-control__num">#{activeQueue.find((entry) => entry.status === 'IN_PROGRESS')?.tokenNumber || '-'}</p>
             </div>
             <div className="queue-control__next">
               <p className="queue-control__label">In Queue</p>
@@ -104,7 +112,7 @@ function DoctorDashboard() {
             )}
           </div>
           <div className="queue-list">
-            {queue.map((q) => (
+            {activeQueue.map((q) => (
               <div key={q.id} className="queue-list-item">
                 <span>#{q.tokenNumber}</span>
                 <span>{q.patientName}</span>

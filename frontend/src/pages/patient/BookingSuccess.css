@@ -5,7 +5,7 @@
   gap: 16px;
   background: rgba(56, 143, 255, 0.08);
   border: 1px solid rgba(56, 143, 255, 0.22);
-  border-radius: 999px;
+  border-radius: 20px;
   padding: 14px 22px;
   margin: 0 auto 24px;
 }
@@ -17,7 +17,7 @@
   border-radius: 50%;
   background: #2e7dff;
   color: #fff;
-  font-size: 26px;
+  flex-shrink: 0;
   box-shadow: 0 10px 24px rgba(46, 125, 255, 0.18);
 }
 .success-copy { text-align: left; }
@@ -74,7 +74,7 @@
   font-size: 14px;
 }
 .success-detail-item:last-child { border-bottom: none; }
-.success-detail-item span { color: var(--text-light); }
+.success-detail-item span { color: var(--text-light); display: inline-flex; align-items: center; gap: 7px; }
 .success-detail-item strong { color: var(--text); }
 
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }

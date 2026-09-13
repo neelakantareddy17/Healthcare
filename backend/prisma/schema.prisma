@@ -129,6 +129,7 @@ model Patient {
   gender     Gender?
   address    String?
   bloodGroup String?
+  avatarId   String?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 

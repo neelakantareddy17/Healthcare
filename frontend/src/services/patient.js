@@ -7,6 +7,7 @@ const normalizePatient = (patient) => ({
   phone: patient.user?.phone,
   gender: patient.gender?.toLowerCase(),
   bloodGroup: patient.bloodGroup,
+  avatarId: patient.avatarId,
 });
 
 export const getPatients = async () => {

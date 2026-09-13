@@ -7,12 +7,13 @@
   --success: #22C55E;
   --warning: #F59E0B;
   --danger: #EF4444;
-  --background: #F7FAFC;
+  --background: #F3F8F7;
   --surface: #FFFFFF;
-  --border: #DDE7E7;
+  --border: #D8E6E4;
   --text: #111827;
   --text-light: #64748B;
-  --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  --radius: 18px;
-  --transition: 0.3s ease;
+  --shadow: 0 12px 30px rgba(15, 72, 68, 0.08);
+  --shadow-sm: 0 4px 14px rgba(15, 72, 68, 0.07);
+  --radius: 16px;
+  --transition: 0.2s ease;
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import PatientLayout from '../../layouts/PatientLayout';
 import Button from '../../components/common/Button';
+import Icon from '../../components/common/Icon';
 import { checkIn } from '../../services/queue';
 import { getStoredPayment } from '../../services/payment';
 import './BookingSuccess.css';
@@ -58,15 +59,15 @@ function Checkin() {
 
         <div className="success-details success-details--compact">
           <div className="success-detail-item">
-            <span>🩺 Doctor</span>
+            <span><Icon name="doctor" size={16} /> Doctor</span>
             <strong>{appt.doctorName}</strong>
           </div>
           <div className="success-detail-item">
-            <span>📅 Date</span>
+            <span><Icon name="calendar" size={16} /> Date</span>
             <strong>{appt.date}</strong>
           </div>
           <div className="success-detail-item">
-            <span>🕐 Time</span>
+            <span><Icon name="clock" size={16} /> Time window</span>
             <strong>{appt.time}</strong>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
+import Icon from '../../components/common/Icon';
 import { getNotifications, markNotificationRead } from '../../services/notification';
 import './Notifications.css';
 
@@ -22,7 +23,7 @@ function Notifications() {
     setNotifs((current) => current.map((notification) => updatedById.get(notification.id) || notification));
   };
 
-  const typeIcon = { appointment: '📅', queue: '🎫', reminder: '⏰', record: '📋' };
+  const typeIcon = { appointment: 'calendar', queue: 'queue', reminder: 'clock', record: 'clipboard' };
 
   return (
     <PatientLayout>
@@ -35,11 +36,11 @@ function Notifications() {
       {loading ? (
         <Loader />
       ) : notifs.length === 0 ? (
-        <EmptyState icon="🔔" title="No notifications" />
+        <EmptyState icon="notification" title="No notifications" description="You are all caught up. New appointment and queue updates will appear here." />
       ) : (
         notifs.map((n) => (
           <div key={n.id} className={`notif-card ${!n.read ? 'notif-card--unread' : ''}`}>
-            <div className="notif-card__icon">{typeIcon[n.type] || '🔔'}</div>
+            <div className="notif-card__icon"><Icon name={typeIcon[n.type] || 'notification'} size={19} /></div>
             <div className="notif-card__body">
               <p className="notif-card__title">{n.title}</p>
               <p className="notif-card__msg">{n.message}</p>

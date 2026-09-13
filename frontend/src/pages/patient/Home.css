@@ -160,7 +160,8 @@
 .home-empty {
   background: #fff;
   border-radius: 22px;
-  padding: 28px 20px;
+  padding: 30px 24px;
+  border: 1px dashed #c6dbd8;
   text-align: center;
   color: #5b6b74;
   margin-bottom: 18px;
@@ -395,3 +396,15 @@
   color: #c3cbce;
   flex-shrink: 0;
 }
+.home-empty__icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #0d6e64;
+  background: rgba(13, 110, 100, 0.1);
+}
+.home-empty h3 { color: #16232b; font-size: 17px; margin-bottom: 5px; }
+.home-empty p { margin: 0; font-size: 13px; line-height: 1.5; }

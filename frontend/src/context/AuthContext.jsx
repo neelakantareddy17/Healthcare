@@ -42,13 +42,19 @@ export function AuthProvider({ children }) {
     return u;
   };
 
+  const refreshUser = async () => {
+    const currentUser = await getMe();
+    setUser(currentUser);
+    return currentUser;
+  };
+
   const logout = () => {
     logoutService();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, refreshUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

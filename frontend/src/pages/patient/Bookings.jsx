@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
+import Icon from '../../components/common/Icon';
 import AppointmentCard from '../../components/appointment/AppointmentCard';
 import { getPatientAppointments, cancelAppointment } from '../../services/appointment';
 import './Bookings.css';
@@ -122,7 +123,7 @@ function Bookings() {
             <div className="filter-block">
               <span className="filter-block__heading">Month</span>
               <label className="filter-select">
-                <span className="filter-select__icon">📅</span>
+                <Icon name="calendar" size={17} className="filter-select__icon" />
                 <select
                   value={monthFilter}
                   onChange={(event) => setMonthFilter(event.target.value)}
@@ -141,7 +142,7 @@ function Bookings() {
           <Loader />
         ) : filteredAppointments.length === 0 ? (
           <EmptyState
-            icon="📅"
+            icon="calendar"
             title="No bookings found"
             description="Try changing your filters or book a new appointment."
           />

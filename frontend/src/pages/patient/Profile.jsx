@@ -1,31 +1,23 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
+import { getAvatarOption } from '../../utils/avatar';
+import { getInitials } from '../../utils/helpers';
 import './Profile.css';
-
-// TODO: confirm these fields actually exist on your `user` object / patient profile API.
-// Falling back to screenshot values so the page never looks broken while you wire real data.
-const FALLBACK = {
-  name: 'Alex Johnson',
-  photo: '',
-  membership: 'Premium Member',
-  bloodType: 'O+',
-  weightKg: 72,
-  heightCm: 180,
-};
 
 function Profile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const profile = {
-    name: user?.name || FALLBACK.name,
-    photo: user?.photo || FALLBACK.photo,
-    membership: user?.membership || FALLBACK.membership,
-    bloodType: user?.bloodType || FALLBACK.bloodType,
-    weightKg: user?.weightKg ?? FALLBACK.weightKg,
-    heightCm: user?.heightCm ?? FALLBACK.heightCm,
+    name: user?.name || 'Patient',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    gender: user?.patient?.gender || '',
+    bloodGroup: user?.patient?.bloodGroup || '',
+    avatarId: user?.patient?.avatarId,
   };
+  const avatar = getAvatarOption(profile.avatarId) || getAvatarOption('sage');
 
   const accountLinks = [
     { to: '/patient/profile/personal-information', label: 'Personal Information', icon: (
@@ -46,16 +38,13 @@ function Profile() {
   ];
 
   const stats = [
-    { label: 'Blood Type', value: profile.bloodType, variant: 'rose', icon: (
+    profile.bloodGroup && { label: 'Blood Group', value: profile.bloodGroup, variant: 'rose', icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3s6 6.5 6 10.5a6 6 0 11-12 0C6 9.5 12 3 12 3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>
     ) },
-    { label: 'Weight', value: `${profile.weightKg}kg`, variant: 'teal', icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.6" /><path d="M12 8v4l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+    profile.gender && { label: 'Gender', value: profile.gender, variant: 'teal', icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="14" r="5" stroke="currentColor" strokeWidth="1.6" /><path d="M14 10l6-6M16 4h4v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
     ) },
-    { label: 'Height', value: `${profile.heightCm}cm`, variant: 'blue', icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M8 3h8M8 21h8M12 3v18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /><path d="M12 6h2M12 10h2M12 14h2M12 18h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
-    ) },
-  ];
+  ].filter(Boolean);
 
   const handleLogout = () => {
     logout();
@@ -66,19 +55,12 @@ function Profile() {
     <PatientLayout>
       <div className="pf-header">
         <div className="pf-avatar-wrap">
-          {profile.photo ? (
-            <img src={profile.photo} alt={profile.name} className="pf-avatar" />
-          ) : (
-            <div className="pf-avatar pf-avatar--placeholder" />
-          )}
-          <span className="pf-verified">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </span>
+          <div className="pf-avatar pf-avatar--placeholder" style={{ background: avatar?.background, color: avatar?.color }}>{getInitials(profile.name)}</div>
         </div>
         <h2 className="pf-name">{profile.name}</h2>
         <span className="pf-membership">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.5 5 5.5.7-4 3.9.9 5.4L12 14.5 7.1 17l.9-5.4-4-3.9L9.5 7z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg>
-          {profile.membership}
+          {profile.email || 'Patient account'}
         </span>
       </div>
 
@@ -117,15 +99,6 @@ function Profile() {
         Logout
       </button>
 
-      {/* TODO: confirm what this should open — assumed AI assistant/QR scanner based on the app's icon set */}
-      <button
-        type="button"
-        className="pf-fab"
-        aria-label="Open assistant"
-        onClick={() => navigate('/patient/qr-scanner')}
-      >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="white" strokeWidth="1.6" /><rect x="13" y="4" width="7" height="7" rx="1.5" stroke="white" strokeWidth="1.6" /><rect x="4" y="13" width="7" height="7" rx="1.5" stroke="white" strokeWidth="1.6" /><path d="M14 14h3v3h-3zM19 14v6M14 19h6" stroke="white" strokeWidth="1.6" strokeLinecap="round" /></svg>
-      </button>
     </PatientLayout>
   );
 }

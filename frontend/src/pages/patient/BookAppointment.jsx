@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PatientLayout from '../../layouts/PatientLayout';
 import Button from '../../components/common/Button';
 import Loader from '../../components/common/Loader';
+import Icon from '../../components/common/Icon';
 import { getDoctorById } from '../../services/doctor';
 import { bookAppointment } from '../../services/appointment';
+import { getLocalDateInputValue, isTimeSlotPast } from '../../utils/date';
 import './BookAppointment.css';
 
 const SLOT_GROUPS = [
@@ -22,13 +24,28 @@ function BookAppointment() {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [notes, setNotes] = useState('');
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
     getDoctorById(id).then((d) => { setDoctor(d); setLoading(false); });
   }, [id]);
 
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 30000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const today = getLocalDateInputValue(now);
+  const selectedTimeIsPast = isTimeSlotPast(selectedTime, selectedDate, now);
+
+  const handleDateChange = (event) => {
+    const nextDate = event.target.value;
+    setSelectedDate(nextDate);
+    if (isTimeSlotPast(selectedTime, nextDate)) setSelectedTime('');
+  };
+
   const handleBook = async () => {
-    if (!selectedDate || !selectedTime) return alert('Please select date and time');
+    if (!selectedDate || !selectedTime || selectedTimeIsPast) return alert('Please select a future date and time slot');
     setBooking(true);
     try {
       const appointment = await bookAppointment({
@@ -42,8 +59,6 @@ function BookAppointment() {
       setBooking(false);
     }
   };
-
-  const today = new Date().toISOString().split('T')[0];
 
   if (loading) return <PatientLayout><Loader /></PatientLayout>;
 
@@ -64,12 +79,12 @@ function BookAppointment() {
       <div className="book-section">
         <h3 className="book-section__title">Select Date</h3>
         <div className="book-date-picker">
-          <span className="book-date-icon">📅</span>
+          <Icon name="calendar" size={20} className="book-date-icon" />
           <input
             type="date"
             className="book-date-input"
             value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
+            onChange={handleDateChange}
             min={today}
           />
         </div>
@@ -77,6 +92,7 @@ function BookAppointment() {
 
       <div className="book-section">
         <h3 className="book-section__title">Select Time Slot</h3>
+        <p className="book-section__hint">Choose a 60-minute arrival window. Your exact consultation time may vary with the clinic queue.</p>
         <div className="slot-groups">
           {SLOT_GROUPS.map((group) => (
             <div key={group.title} className="slot-group">
@@ -87,6 +103,7 @@ function BookAppointment() {
                     key={timeSlot}
                     className={`time-slot ${selectedTime === timeSlot ? 'time-slot--active' : ''}`}
                     onClick={() => setSelectedTime(timeSlot)}
+                    disabled={isTimeSlotPast(timeSlot, selectedDate, now)}
                     type="button"
                   >
                     {timeSlot}
@@ -109,7 +126,7 @@ function BookAppointment() {
         />
       </div>
 
-      <Button title={booking ? 'Booking...' : `Book Appointment — ₹${doctor?.fee}`} onClick={handleBook} disabled={booking || !selectedDate || !selectedTime} />
+          <Button title={booking ? 'Booking...' : `Book Appointment — ₹${doctor?.fee}`} onClick={handleBook} disabled={booking || !selectedDate || !selectedTime || selectedTimeIsPast} />
     </PatientLayout>
   );
 }

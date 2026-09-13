@@ -7,7 +7,16 @@
   position: relative; transition: var(--transition);
 }
 .notif-card--unread { background: var(--primary-soft); }
-.notif-card__icon { font-size: 28px; flex-shrink: 0; }
+.notif-card__icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
 .notif-card__body { flex: 1; }
 .notif-card__title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
 .notif-card__msg { font-size: 13px; color: var(--text-light); line-height: 1.4; margin-bottom: 6px; }

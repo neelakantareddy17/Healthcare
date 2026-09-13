@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import Badge from '../common/Badge';
+import Icon from '../common/Icon';
 import { getInitials } from '../../utils/helpers';
 import './DoctorCard.css';
 
@@ -23,10 +24,10 @@ function DoctorCard({ doctor }) {
           <Badge label={statusLabel} type={statusType} />
         </div>
         <p className="doctor-card__specialty">{doctor.specialty}</p>
-        <p className="doctor-card__hospital">🏥 {doctor.hospital}, {doctor.city}</p>
+        <p className="doctor-card__hospital"><Icon name="mapPin" size={15} /> {doctor.hospital}, {doctor.city}</p>
         <div className="doctor-card__meta">
-          <span>⭐ {doctor.rating} ({doctor.reviews})</span>
-          <span>💼 {doctor.experience}yrs</span>
+          <span><Icon name="star" size={14} /> {doctor.rating} ({doctor.reviews})</span>
+          <span>{doctor.experience} yrs experience</span>
           <span className="doctor-card__fee">₹{doctor.fee}</span>
         </div>
       </div>

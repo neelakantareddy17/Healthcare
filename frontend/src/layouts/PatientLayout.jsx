@@ -1,4 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { getAvatarOption } from '../utils/avatar';
+import { getInitials } from '../utils/helpers';
 import './PatientLayout.css';
 
 const navItems = [
@@ -18,6 +21,8 @@ const navItems = [
 
 function PatientLayout({ children }) {
   const { pathname } = useLocation();
+  const { user } = useAuth();
+  const avatar = getAvatarOption(user?.patient?.avatarId) || getAvatarOption('sage');
 
   return (
     <div className="pl-shell">
@@ -33,9 +38,9 @@ function PatientLayout({ children }) {
           <Link to="/patient/notifications" className="pl-icon-btn" aria-label="Notifications">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M6 10a6 6 0 1112 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /><path d="M10 20a2 2 0 004 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
           </Link>
-          <Link to="/patient/profile" className="pl-icon-btn" aria-label="Profile">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" strokeWidth="1.6" /><path d="M5 20c1.4-3.6 4.4-5.6 7-5.6s5.6 2 7 5.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
-          </Link>
+          <span className="pl-header__avatar" style={{ background: avatar?.background, color: avatar?.color }} aria-label={`${user?.name || 'Patient'} avatar`}>
+            {getInitials(user?.name || 'Patient')}
+          </span>
         </div>
       </header>
 

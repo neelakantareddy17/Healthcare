@@ -330,6 +330,56 @@
   margin-top: 18px;
 }
 
+.mq-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mq-input--standalone {
+  width: 100%;
+  margin-top: 7px;
+}
+
+.mq-textarea {
+  resize: vertical;
+  min-height: 68px;
+}
+
+.mq-avatar-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.mq-avatar-fieldset legend { padding: 0; }
+
+.mq-avatar-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.mq-avatar-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #d8e6e4;
+  border-radius: 11px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.mq-avatar-option--selected {
+  border-color: #0d6e64;
+  background: #e8fbf8;
+}
+
+.mq-avatar-option input { position: absolute; opacity: 0; pointer-events: none; }
+.mq-avatar-option span { width: 27px; height: 27px; border-radius: 9px; display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+.mq-avatar-option small { color: #64748b; font-size: 11px; }
+
 .mq-checkbox-row {
   display: flex;
   align-items: flex-start;
