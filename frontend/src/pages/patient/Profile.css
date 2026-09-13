@@ -59,6 +59,53 @@
   border-radius: 20px;
 }
 
+/* Email under name */
+.pf-email {
+  font-size: 13px;
+  color: #8b969c;
+  margin: 4px 0 0;
+  word-break: break-all;
+}
+
+/* Complete-profile nudge card */
+.pf-complete-prompt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: linear-gradient(135deg, rgba(13, 110, 100, 0.07), rgba(11, 61, 145, 0.07));
+  border: 1.5px dashed rgba(13, 110, 100, 0.35);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 22px;
+  cursor: pointer;
+  text-align: left;
+  color: #0a5850;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  transition: background 0.15s ease;
+}
+
+.pf-complete-prompt:hover {
+  background: linear-gradient(135deg, rgba(13, 110, 100, 0.12), rgba(11, 61, 145, 0.12));
+}
+
+.pf-complete-prompt svg:first-child {
+  flex-shrink: 0;
+  color: #0d6e64;
+}
+
+.pf-complete-prompt span {
+  flex: 1;
+}
+
+.pf-complete-prompt svg:last-child {
+  flex-shrink: 0;
+  color: #0d6e64;
+  opacity: 0.6;
+}
+
 /* Stats */
 .pf-stats {
   display: flex;

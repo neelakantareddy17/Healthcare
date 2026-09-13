@@ -1,0 +1,60 @@
+/* PatientAvatar component styles */
+
+.pa-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: default;
+}
+
+button.pa-wrap {
+  cursor: pointer;
+}
+
+button.pa-wrap:hover {
+  transform: scale(1.04);
+}
+
+button.pa-wrap:focus-visible {
+  outline: 3px solid #0d6e64;
+  outline-offset: 3px;
+}
+
+.pa-ring {
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 5px #0d6e64;
+}
+
+.pa-svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  line-height: 0;
+}
+
+.pa-svg svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pa-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  user-select: none;
+}

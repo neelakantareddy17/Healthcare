@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import DoctorLayout from '../../layouts/DoctorLayout';
 import Loader from '../../components/common/Loader';
 import { getPatients } from '../../services/patient';
-import { getInitials } from '../../utils/helpers';
+import PatientAvatar from '../../components/patient/PatientAvatar';
+import { loadAvatarId } from '../../utils/avatar.jsx';
 import EmptyState from '../../components/common/EmptyState';
 
 function Patients() {
@@ -21,9 +22,11 @@ function Patients() {
       ) : (
         patients.map((p) => (
           <div key={p.id} style={{ background: '#fff', borderRadius: 18, padding: 16, marginBottom: 12, boxShadow: '0 4px 14px rgba(0,0,0,0.06)', display: 'flex', gap: 14, alignItems: 'center' }}>
-            <div style={{ width: 52, height: 52, borderRadius: 14, background: 'var(--primary-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 18, color: 'var(--primary)', flexShrink: 0 }}>
-              {getInitials(p.name)}
-            </div>
+            <PatientAvatar
+              avatarId={loadAvatarId(p.userId)}
+              name={p.name}
+              size={52}
+            />
             <div>
               <p style={{ fontWeight: 700, marginBottom: 4 }}>{p.name}</p>
               <p style={{ fontSize: 13, color: 'var(--text-light)' }}>{p.age}y • {p.gender} • {p.bloodGroup}</p>

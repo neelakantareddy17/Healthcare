@@ -59,14 +59,17 @@
   background: #eef1f2;
 }
 
-.pl-header__avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 11px;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  font-weight: 800;
+.pl-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 50%;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pl-avatar-btn:hover {
+  transform: scale(1.08);
 }
 
 .pl-content {
