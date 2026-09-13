@@ -16,7 +16,7 @@
 
 .appt-card__doctor {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 700;
   color: #111827;
   margin: 0;
 }
@@ -24,7 +24,7 @@
 .appt-card__specialty {
   font-size: 14px;
   color: #0d6e64;
-  font-weight: 600;
+  font-weight: 500;
   margin: 6px 0 0;
 }
 
@@ -66,7 +66,7 @@
   padding: 12px;
   border-radius: 14px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   border: none;
   cursor: pointer;
   transition: var(--transition);

@@ -1,15 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import PatientAvatar from '../components/patient/PatientAvatar';
-import { usePatientAvatar } from '../utils/avatar.jsx';
 import './PatientLayout.css';
 
 const navItems = [
   { to: '/patient', label: 'Home', icon: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 11l8-7 8 7v9a1 1 0 01-1 1h-4v-6H9v6H5a1 1 0 01-1-1v-9z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /></svg>
   ) },
-  { to: '/patient/find-doctor', label: 'Find', icon: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" /><path d="M21 21l-4.3-4.3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+  { to: '/patient/find-doctor', label: 'Book', icon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.8" /><path d="M8 3v4M16 3v4M4 10h16M12 13v4M9 15h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
   ) },
   { to: '/patient/queue', label: 'Queue', icon: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h12M6 21h12M8 3c0 4 2 5.5 4 6.5m0 0c2 1 4 2.5 4 6.5M16 3c0 4-2 5.5-4 6.5m0 0-2 1-4 2.5-4 6.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
@@ -21,9 +18,6 @@ const navItems = [
 
 function PatientLayout({ children }) {
   const { pathname } = useLocation();
-  const { user } = useAuth();
-  const avatarId = usePatientAvatar(user?.id);
-
   return (
     <div className="pl-shell">
       <header className="pl-header">
@@ -34,14 +28,9 @@ function PatientLayout({ children }) {
           MediQ AI
         </Link>
 
-        <div className="pl-header__actions">
-          <Link to="/patient/notifications" className="pl-icon-btn" aria-label="Notifications">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M6 10a6 6 0 1112 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /><path d="M10 20a2 2 0 004 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
-          </Link>
-          <Link to="/patient/profile" className="pl-avatar-btn" aria-label="Profile" title="Profile &amp; Settings">
-            <PatientAvatar avatarId={avatarId} name={user?.name} size={34} />
-          </Link>
-        </div>
+        <Link to="/patient/notifications" className="pl-icon-btn" aria-label="Notifications">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M6 10a6 6 0 1112 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /><path d="M10 20a2 2 0 004 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+        </Link>
       </header>
 
       <main className="pl-content">{children}</main>
@@ -50,7 +39,7 @@ function PatientLayout({ children }) {
         {navItems.map((item) => {
           const active = pathname === item.to;
           return (
-            <Link key={item.to} to={item.to} className={`pl-nav__item ${active ? 'pl-nav__item--active' : ''}`}>
+            <Link key={item.to} to={item.to} className={`pl-nav__item ${active ? 'pl-nav__item--active' : ''}`} aria-current={active ? 'page' : undefined}>
               {item.icon}
               <span>{item.label}</span>
             </Link>

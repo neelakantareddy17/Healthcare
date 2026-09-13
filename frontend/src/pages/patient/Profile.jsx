@@ -84,12 +84,31 @@ function Profile() {
       ),
     },
     {
-      to: '/patient/medical-records',
+      to: '/patient/medical-records?type=lab',
       label: 'Medical History',
       icon: (
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
           <path d="M6 3h9l5 5v13H6z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
           <path d="M9 12h6M9 16h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    {
+      to: '/patient/bookings',
+      label: 'My Bookings',
+      icon: (
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+          <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    {
+      to: '/patient/medical-records',
+      label: 'Lab Records',
+      icon: (
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+          <path d="M9 3h6M10 3v6.5L5.5 18a2 2 0 001.8 3h9.4a2 2 0 001.8-3L14 9.5V3" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
         </svg>
       ),
     },

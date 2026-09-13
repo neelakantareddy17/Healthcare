@@ -7,6 +7,7 @@ import Icon from '../../components/common/Icon';
 import { getDoctorById } from '../../services/doctor';
 import { bookAppointment } from '../../services/appointment';
 import { getLocalDateInputValue, isTimeSlotPast } from '../../utils/date';
+import { formatINR } from '../../utils/currency';
 import './BookAppointment.css';
 
 const SLOT_GROUPS = [
@@ -72,7 +73,7 @@ function BookAppointment() {
         <div>
           <p className="book-doctor-name">{doctor?.name}</p>
           <p className="book-doctor-spec">{doctor?.specialty}</p>
-          <p className="book-doctor-fee">Consultation fee: <strong>₹{doctor?.fee}</strong></p>
+          <p className="book-doctor-fee">Consultation fee: <strong>{formatINR(doctor?.fee)}</strong></p>
         </div>
       </div>
 
@@ -126,7 +127,7 @@ function BookAppointment() {
         />
       </div>
 
-          <Button title={booking ? 'Booking...' : `Book Appointment — ₹${doctor?.fee}`} onClick={handleBook} disabled={booking || !selectedDate || !selectedTime || selectedTimeIsPast} />
+          <Button title={booking ? 'Booking...' : `Book Appointment — ${formatINR(doctor?.fee)}`} onClick={handleBook} disabled={booking || !selectedDate || !selectedTime || selectedTimeIsPast} />
     </PatientLayout>
   );
 }

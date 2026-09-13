@@ -4,6 +4,7 @@ import PatientLayout from '../../layouts/PatientLayout';
 import Button from '../../components/common/Button';
 import Icon from '../../components/common/Icon';
 import { getStoredPayment, payForAppointment } from '../../services/payment';
+import { formatINR } from '../../utils/currency';
 import './BookingSuccess.css';
 
 function BookingSuccess() {
@@ -17,6 +18,7 @@ function BookingSuccess() {
   const qrSrc = payment?.qrCode || '';
   const amount = payment?.payment?.amount ?? appt?.fee;
   const paidMethod = payment?.payment?.method || paymentMethod;
+  const isPaid = Boolean(payment);
 
   const handlePayment = async () => {
     setPaying(true);
@@ -36,49 +38,64 @@ function BookingSuccess() {
   return (
     <PatientLayout>
       <div className="success-container">
-        <div className="success-header">
-          <div className="success-icon"><Icon name="check" size={28} strokeWidth={2.2} /></div>
+        <div className={`success-header ${isPaid ? 'success-header--paid' : ''}`}>
+          <div className="success-icon"><Icon name={isPaid ? 'check' : 'creditCard'} size={28} strokeWidth={2.2} /></div>
           <div className="success-copy">
-            <h2 className="success-title">Appointment Created</h2>
-            <p className="success-subtitle">Complete payment to confirm your appointment and receive its check-in QR.</p>
+            <h2 className="success-title">{isPaid ? 'Payment successful' : 'Confirm your appointment'}</h2>
+            <p className="success-subtitle">{isPaid ? 'Your appointment is confirmed. Keep this QR code for check-in.' : 'Review your visit details and choose a payment method.'}</p>
           </div>
         </div>
 
-        <div className="success-qr">
-          <div className="qr-code">
-            {qrSrc ? (
-              <img className="qr-image" src={qrSrc} alt="Appointment QR code" />
-            ) : (
-              <p className="qr-hint">QR available after successful payment.</p>
-            )}
+        <div className="success-summary">
+          <div>
+            <span>Appointment summary</span>
+            <strong>{appt.doctorName}</strong>
+            <small>{appt.date} · {appt.time}</small>
           </div>
-          {qrSrc && <p className="qr-hint">Show this QR at the clinic for check-in</p>}
+          <strong className="success-summary__amount">{formatINR(amount)}</strong>
         </div>
+
+        {!isPaid && (
+          <div className="payment-panel">
+            <h3>Choose payment method</h3>
+            <div className="payment-options" role="radiogroup" aria-label="Payment method">
+              {[
+                ['CARD', 'Card', 'Pay securely by card'],
+                ['UPI', 'UPI', 'Google Pay, PhonePe and more'],
+                ['CASH', 'Cash', 'Pay at the clinic'],
+                ['WALLET', 'Wallet', 'Use your saved balance'],
+              ].map(([value, label, description]) => (
+                <label key={value} className={`payment-option ${paymentMethod === value ? 'payment-option--active' : ''}`}>
+                  <input type="radio" name="payment-method" value={value} checked={paymentMethod === value} onChange={(event) => setPaymentMethod(event.target.value)} />
+                  <span><strong>{label}</strong><small>{description}</small></span>
+                </label>
+              ))}
+            </div>
+            <Button title={paying ? 'Processing...' : `Pay ${formatINR(amount)}`} onClick={handlePayment} disabled={paying} />
+            {paymentError && <p className="payment-error" role="alert">{paymentError}</p>}
+          </div>
+        )}
+
+        {isPaid && qrSrc && (
+          <div className="success-qr">
+            <div className="success-qr__badge"><Icon name="check" size={16} /> Confirmed</div>
+            <div className="qr-code">
+              <img className="qr-image" src={qrSrc} alt="Appointment QR code" />
+            </div>
+            <p className="qr-hint">Show this QR at the clinic for check-in</p>
+          </div>
+        )}
 
         <div className="success-details">
           <div className="success-detail-item">
-            <span>Amount paying</span>
-            <strong>{amount !== undefined && amount !== null ? `₹${amount}` : 'Amount unavailable'}</strong>
+            <span>Amount</span>
+            <strong>{formatINR(amount)}</strong>
           </div>
           <div className="success-detail-item">
             <span>Payment method</span>
-            <strong>{paidMethod}</strong>
+            <strong>{isPaid ? paidMethod : 'Not selected'}</strong>
           </div>
         </div>
-
-        {!payment && (
-          <div style={{ marginTop: 24 }}>
-            <label htmlFor="payment-method">Payment method</label>
-            <select id="payment-method" value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>
-              <option value="CARD">Card</option>
-              <option value="UPI">UPI</option>
-              <option value="CASH">Cash</option>
-              <option value="WALLET">Wallet</option>
-            </select>
-            <Button title={paying ? 'Processing...' : 'Pay and Confirm'} onClick={handlePayment} disabled={paying} />
-            {paymentError && <p role="alert">{paymentError}</p>}
-          </div>
-        )}
 
         <div className="success-details">
           <div className="success-detail-item">

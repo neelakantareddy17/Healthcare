@@ -1,8 +1,12 @@
 /* MediQ AI — Patient Home */
 
+.home-intro {
+  margin-bottom: 24px;
+}
+
 .home-date {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.06em;
   color: #8b969c;
   margin: 4px 0 4px;
@@ -10,7 +14,7 @@
 
 .home-greeting {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 700;
   color: #16232b;
   margin: 0 0 10px;
 }
@@ -21,7 +25,7 @@
   gap: 6px;
   font-size: 14px;
   color: #0d6e64;
-  font-weight: 600;
+  font-weight: 500;
   margin: 0 0 20px;
 }
 
@@ -44,7 +48,7 @@
   background: rgba(13, 110, 100, 0.1);
   color: #0d6e64;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 5px 10px;
@@ -61,7 +65,7 @@
 
 .appt-doctor {
   font-size: 19px;
-  font-weight: 800;
+  font-weight: 700;
   color: #16232b;
   margin: 0 0 2px;
 }
@@ -167,6 +171,44 @@
   margin-bottom: 18px;
 }
 
+.home-appointments {
+  margin-bottom: 24px;
+}
+
+.home-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.home-section-kicker {
+  color: #0d6e64;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 3px;
+}
+
+.home-appointment-count {
+  min-width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #e6f4f1;
+  color: #0d6e64;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.home-appointment-list {
+  display: grid;
+  gap: 12px;
+}
+
 .home-book-btn {
   display: inline-block;
   margin-top: 12px;
@@ -197,7 +239,7 @@
   border: 2px solid #0d6e64;
   color: #0d6e64;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -222,7 +264,7 @@
 
 .queue-banner__title {
   font-size: 14.5px;
-  font-weight: 700;
+  font-weight: 600;
   color: #0b3d3a;
   margin: 0 0 2px;
 }
@@ -242,7 +284,7 @@
 /* Section titles */
 .section-title {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 700;
   color: #16232b;
   margin: 0 0 12px;
 }
@@ -307,7 +349,7 @@
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin: 0 0 12px;

@@ -7,6 +7,7 @@ import { getInitials } from '../../utils/helpers';
 // TODO: confirm these exports exist in services/doctor.js — adjust names if yours differ
 import { getDoctors } from '../../services/doctor';
 import './FindDoctor.css';
+import { formatINR } from '../../utils/currency';
 
 const specialties = [
   { key: 'Cardiology', label: 'Cardiology', variant: 'rose', icon: (
@@ -130,7 +131,7 @@ function FindDoctor() {
                 <div className="fd-doctor-foot">
                   <div>
                     <p className="fd-fee-label">Fee</p>
-                    <p className="fd-fee-value">${doc.fee}</p>
+                    <p className="fd-fee-value">{formatINR(doc.fee)}</p>
                   </div>
                   <button
                     type="button"

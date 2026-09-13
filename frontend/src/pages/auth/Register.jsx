@@ -111,12 +111,7 @@ function Register() {
   const validateStep2 = () => {
     const errors = {};
     if (form.dob) {
-      const dob = new Date(form.dob);
-      if (isNaN(dob.getTime())) {
-        errors.dob = 'Enter a valid date.';
-      } else if (dob > new Date()) {
-        errors.dob = 'Date of birth cannot be in the future.';
-      }
+      if (form.dob < earliestDob || form.dob > today) errors.dob = 'Enter a valid date of birth.';
     }
     if (!agreed) {
       errors.agreed = 'You must agree to the Terms of Service and Privacy Policy.';
@@ -192,6 +187,7 @@ function Register() {
   };
 
   const today = new Date().toISOString().split('T')[0];
+  const earliestDob = '1900-01-01';
 
   // ── Shared field-error renderer ───────────────────────────────────
   const FieldError = ({ name }) =>
@@ -480,7 +476,9 @@ function Register() {
                     value={form.dob}
                     onChange={handleChange}
                     className="mq-input mq-input--date"
+                    min={earliestDob}
                     max={today}
+                    aria-label="Date of birth"
                     aria-describedby={fieldErrors.dob ? 'reg-dob-error' : undefined}
                     aria-invalid={!!fieldErrors.dob}
                   />

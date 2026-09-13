@@ -20,11 +20,63 @@
   flex-shrink: 0;
   box-shadow: 0 10px 24px rgba(46, 125, 255, 0.18);
 }
+.success-header--paid {
+  background: rgba(20, 150, 96, 0.1);
+  border-color: rgba(20, 150, 96, 0.24);
+}
+.success-header--paid .success-icon {
+  background: #159669;
+  box-shadow: 0 10px 24px rgba(21, 150, 105, 0.2);
+}
 .success-copy { text-align: left; }
 .success-title { font-size: 22px; font-weight: 800; color: var(--text); margin: 0 0 4px; }
 .success-subtitle { font-size: 14px; color: var(--text-light); margin: 0; }
 
+.success-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.success-summary span,
+.success-summary small { display: block; color: var(--text-light); font-size: 12px; }
+.success-summary strong { display: block; color: var(--text); font-size: 16px; margin: 4px 0; }
+.success-summary__amount { color: var(--primary) !important; font-size: 20px !important; white-space: nowrap; }
+
+.payment-panel {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+.payment-panel h3 { margin: 0 0 14px; font-size: 16px; color: var(--text); }
+.payment-options { display: grid; gap: 10px; margin-bottom: 16px; }
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+}
+.payment-option--active { border-color: var(--primary); background: var(--primary-soft); }
+.payment-option input { accent-color: var(--primary); }
+.payment-option span { display: grid; gap: 3px; }
+.payment-option strong { color: var(--text); font-size: 14px; }
+.payment-option small { color: var(--text-light); font-size: 12px; }
+.payment-error { color: #b42318; font-size: 13px; margin: 12px 0 0; }
+
 .success-qr { background: #fff; border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+.success-qr__badge { display: inline-flex; align-items: center; gap: 5px; color: #138a60; background: #e5f7ef; border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 800; margin-bottom: 16px; }
 .success-qr--large { padding: 32px; }
 
 .qr-code {
