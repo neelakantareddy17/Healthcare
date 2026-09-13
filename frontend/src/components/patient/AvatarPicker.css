@@ -1,0 +1,95 @@
+/* AvatarPicker grid */
+
+.avp-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.avp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.avp-item {
+  position: relative;
+  background: rgba(255, 255, 255, 0.65);
+  border: 2px solid rgba(120, 130, 138, 0.2);
+  border-radius: 16px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.avp-item svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.avp-item:hover {
+  border-color: rgba(13, 110, 100, 0.5);
+  box-shadow: 0 4px 14px rgba(13, 110, 100, 0.14);
+  transform: scale(1.04);
+}
+
+.avp-item:focus-visible {
+  outline: 3px solid #0d6e64;
+  outline-offset: 2px;
+}
+
+.avp-item--selected {
+  border-color: #0d6e64;
+  box-shadow: 0 0 0 3px rgba(13, 110, 100, 0.18), 0 4px 14px rgba(13, 110, 100, 0.18);
+  background: rgba(13, 110, 100, 0.05);
+}
+
+/* Checkmark badge */
+.avp-check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.avp-check svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Clear selection */
+.avp-clear {
+  background: none;
+  border: none;
+  font-size: 12.5px;
+  color: #8b969c;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  align-self: flex-start;
+  transition: color 0.15s ease;
+}
+
+.avp-clear:hover {
+  color: #d6455a;
+}
+
+@media (max-width: 380px) {
+  .avp-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+}

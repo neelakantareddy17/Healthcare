@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
+import PatientAvatar from '../../components/patient/PatientAvatar';
+import { usePatientAvatar } from '../../utils/avatar.jsx';
 import { getPatientAppointments, cancelAppointment } from '../../services/appointment';
 import './Home.css';
 
@@ -37,6 +39,7 @@ function Home() {
   const activeQueue = queue[0];
 
   const navigate = useNavigate();
+  const avatarId = usePatientAvatar(user?.id);
   const firstName = user?.name?.split(' ')[0] || 'Patient';
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
@@ -65,15 +68,22 @@ function Home() {
 
   return (
     <PatientLayout>
-      <p className="home-date">{today.toUpperCase()}</p>
-      <h2 className="home-greeting">{greeting}, {firstName}</h2>
-      <p className="home-status">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" className="home-status__icon">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M8 12l2.5 2.5L16 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        Your health status is looking stable today.
-      </p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, marginBottom: 16 }}>
+        <div>
+          <p className="home-date">{today.toUpperCase()}</p>
+          <h2 className="home-greeting" style={{ margin: '0 0 6px' }}>{greeting}, {firstName}</h2>
+          <p className="home-status" style={{ margin: 0 }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" className="home-status__icon">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
+              <path d="M8 12l2.5 2.5L16 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Your health status is looking stable today.
+          </p>
+        </div>
+        <Link to="/patient/profile" title="View profile &amp; avatar" style={{ textDecoration: 'none', flexShrink: 0 }}>
+          <PatientAvatar avatarId={avatarId} name={user?.name} size={56} showRing />
+        </Link>
+      </div>
 
       {loading ? (
         <Loader />

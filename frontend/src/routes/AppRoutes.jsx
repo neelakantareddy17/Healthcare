@@ -17,6 +17,7 @@ import QueueStatus from '../pages/patient/QueueStatus';
 import MedicalRecords from '../pages/patient/MedicalRecords';
 import Notifications from '../pages/patient/Notifications';
 import Profile from '../pages/patient/Profile';
+import PersonalInformation from '../pages/patient/PersonalInformation';
 import Bookings from '../pages/patient/Bookings';
 
 // Doctor
@@ -54,6 +55,7 @@ function AppRoutes() {
       <Route path="/patient/medical-records" element={<RoleRoute role="patient"><MedicalRecords /></RoleRoute>} />
       <Route path="/patient/notifications" element={<RoleRoute role="patient"><Notifications /></RoleRoute>} />
       <Route path="/patient/profile" element={<RoleRoute role="patient"><Profile /></RoleRoute>} />
+      <Route path="/patient/profile/personal-information" element={<RoleRoute role="patient"><PersonalInformation /></RoleRoute>} />
 
       {/* Doctor routes */}
       <Route path="/doctor" element={<RoleRoute role="doctor"><DoctorDashboard /></RoleRoute>} />

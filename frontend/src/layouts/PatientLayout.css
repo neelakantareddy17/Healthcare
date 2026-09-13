@@ -59,6 +59,19 @@
   background: #eef1f2;
 }
 
+.pl-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 50%;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pl-avatar-btn:hover {
+  transform: scale(1.08);
+}
+
 .pl-content {
   flex: 1;
   padding: 20px 18px 90px;

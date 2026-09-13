@@ -5,6 +5,8 @@ import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
 import AppointmentCard from '../../components/appointment/AppointmentCard';
+import PatientAvatar from '../../components/patient/PatientAvatar';
+import { usePatientAvatar } from '../../utils/avatar.jsx';
 import { getPatientAppointments, cancelAppointment } from '../../services/appointment';
 import './Bookings.css';
 
@@ -20,6 +22,7 @@ const getMonthLabel = (dateStr) => {
 function Bookings() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const avatarId = usePatientAvatar(user?.id);
   const [appointments, setAppointments] = useState([]);
   const [statusFilter, setStatusFilter] = useState('All');
   const [monthFilter, setMonthFilter] = useState(ALL_MONTHS);
@@ -76,9 +79,12 @@ function Bookings() {
     <PatientLayout>
       <div className="bookings-page">
         <div className="bookings-header">
-          <div>
-            <h2 className="page-title">My Bookings</h2>
-            <p className="page-subtitle">Track upcoming appointments and review completed visits.</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <PatientAvatar avatarId={avatarId} name={user?.name} size={48} showRing />
+            <div>
+              <h2 className="page-title" style={{ margin: 0 }}>My Bookings</h2>
+              <p className="page-subtitle" style={{ margin: '2px 0 0 0' }}>Track upcoming appointments and review completed visits.</p>
+            </div>
           </div>
 
           <div className="booking-stats-grid">
