@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
-import { getMedicalRecords } from '../../services/patient';
+import { getPatientAppointments } from '../../services/appointment';
 import { formatDate } from '../../utils/formatDate';
 import Icon from '../../components/common/Icon';
 import './MedicalRecords.css';
@@ -14,10 +14,21 @@ function MedicalRecords() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getMedicalRecords().then((r) => { setRecords(r); setLoading(false); });
+    getPatientAppointments()
+      .then((appointments) => setRecords(appointments
+        .filter((appointment) => appointment.status === 'COMPLETED')
+        .map((appointment) => ({
+          id: appointment.id,
+          title: appointment.specialty || 'Completed appointment',
+          doctor: appointment.doctorName,
+          date: appointment.date,
+          notes: appointment.symptoms || 'No consultation notes available.',
+          type: 'Visit',
+        }))))
+      .finally(() => setLoading(false));
   }, [user]);
 
-  const typeIcon = { Report: 'activity', Prescription: 'clipboard', 'Lab Report': 'lab' };
+  const typeIcon = { Report: 'activity', Prescription: 'clipboard', 'Lab Report': 'lab', Visit: 'appointment' };
 
   return (
     <PatientLayout>

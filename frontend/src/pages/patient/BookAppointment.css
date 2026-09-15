@@ -116,3 +116,14 @@
   line-height: 1.5;
 }
 .book-notes:focus { border-color: var(--primary); }
+
+.book-error {
+  color: #a33a44;
+  background: #fff1f2;
+  border: 1px solid #f4c7cc;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: -4px 0 16px;
+  font-size: 13px;
+  line-height: 1.45;
+}

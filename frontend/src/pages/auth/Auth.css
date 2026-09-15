@@ -658,6 +658,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .reg-btn-row .mq-submit {
   margin-top: 0;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .reg-btn-ghost {
@@ -749,4 +751,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .reg-btn-row {
     flex-direction: column-reverse;
   }
-}
+
+  .reg-btn-row .mq-submit {
+    width: 100%;
+  }
+}

@@ -9,6 +9,7 @@ import Modal from '../../components/common/Modal';
 import { createDoctor, deleteDoctor, getDoctors, updateDoctor } from '../../services/doctor';
 import { getDepartments } from '../../services/department';
 import { getInitials } from '../../utils/helpers';
+import './Doctors.css';
 
 const emptyForm = {
   name: '', email: '', password: '', phone: '', departmentId: '', specialization: '',
@@ -145,7 +146,7 @@ function Doctors() {
       </div>
       {notice.text && <p style={{ padding: '12px 14px', borderRadius: 12, marginBottom: 16, background: notice.type === 'error' ? '#fee2e2' : '#dcfce7', color: notice.type === 'error' ? '#b91c1c' : '#166534', fontSize: 13, fontWeight: 600 }}>{notice.text}</p>}
       {loading ? <Loader /> : doctors.map((d) => (
-        <div key={d.id} style={{ background: '#fff', borderRadius: 18, padding: 16, marginBottom: 12, boxShadow: '0 4px 14px rgba(0,0,0,0.06)', display: 'flex', gap: 14, alignItems: 'center' }}>
+        <div key={d.id} className="admin-doctor-card" style={{ background: '#fff', borderRadius: 18, padding: 16, marginBottom: 12, boxShadow: '0 4px 14px rgba(0,0,0,0.06)', display: 'flex', gap: 14, alignItems: 'center' }}>
           <div style={{ width: 52, height: 52, borderRadius: 14, background: 'var(--primary-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 16, color: 'var(--primary)', flexShrink: 0 }}>
             {getInitials(d.name)}
           </div>
@@ -155,8 +156,10 @@ function Doctors() {
             <p style={{ fontSize: 12, color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: 4 }}><Icon name="doctor" size={13} /> {d.department?.name || d.hospital || 'General department'}</p>
           </div>
           <Badge label={d.available ? 'Active' : 'Inactive'} type={d.available ? 'success' : 'danger'} />
-          <Button title="Edit" variant="ghost" onClick={() => openEdit(d)} style={{ width: 'auto', height: 36, padding: '0 10px', fontSize: 13 }} />
-          {d.available && <Button title="Deactivate" variant="ghost" onClick={() => handleDelete(d)} style={{ width: 'auto', height: 36, padding: '0 10px', fontSize: 13, color: '#dc2626' }} />}
+          <div className="admin-doctor-actions">
+            <Button title="Edit" variant="ghost" onClick={() => openEdit(d)} style={{ width: 'auto', height: 36, padding: '0 10px', fontSize: 13 }} />
+            {d.available && <Button title="Deactivate" variant="ghost" onClick={() => handleDelete(d)} style={{ width: 'auto', height: 36, padding: '0 10px', fontSize: 13, color: '#dc2626' }} />}
+          </div>
         </div>
       ))}
       {!loading && doctors.length === 0 && <p style={{ color: 'var(--text-light)', textAlign: 'center', padding: 32 }}>No doctors found.</p>}

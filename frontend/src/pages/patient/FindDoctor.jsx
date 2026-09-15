@@ -24,6 +24,8 @@ const specialties = [
 function FindDoctor() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+  const [specialtyFilter, setSpecialtyFilter] = useState('All');
+  const [showFilters, setShowFilters] = useState(false);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,11 +41,11 @@ function FindDoctor() {
     load();
   }, []);
 
-  const filtered = query
-    ? doctors.filter((d) =>
-        `${d.name} ${d.specialty}`.toLowerCase().includes(query.toLowerCase())
-      )
-    : doctors;
+  const filtered = doctors.filter((doctor) => {
+    const matchesQuery = !query || `${doctor.name} ${doctor.specialty}`.toLowerCase().includes(query.toLowerCase());
+    const matchesSpecialty = specialtyFilter === 'All' || doctor.specialty === specialtyFilter;
+    return matchesQuery && matchesSpecialty;
+  });
 
   return (
     <PatientLayout>
@@ -61,12 +63,23 @@ function FindDoctor() {
             className="fd-search__input"
           />
         </div>
-        <button type="button" className="fd-filter-btn" aria-label="Filters">
+        <button type="button" className={`fd-filter-btn ${showFilters ? 'fd-filter-btn--active' : ''}`} aria-label="Filters" onClick={() => setShowFilters((visible) => !visible)}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M4 6h16M7 12h10M10 18h4" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
         </button>
       </div>
+      {showFilters && (
+        <div className="fd-filter-panel">
+          <label htmlFor="doctor-specialty-filter">Specialty</label>
+          <select id="doctor-specialty-filter" value={specialtyFilter} onChange={(event) => setSpecialtyFilter(event.target.value)}>
+            <option value="All">All specialties</option>
+            {Array.from(new Set(doctors.map((doctor) => doctor.specialty).filter(Boolean))).sort().map((specialty) => (
+              <option key={specialty} value={specialty}>{specialty}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="fd-recommendation">
         <span className="fd-recommendation__icon">
@@ -82,7 +95,7 @@ function FindDoctor() {
 
       <div className="fd-section-head">
         <h3 className="section-title">Specialists</h3>
-        <button type="button" className="fd-viewall" onClick={() => navigate('/patient/departments')}>View All</button>
+        <button type="button" className="fd-viewall" onClick={() => { setQuery(''); setSpecialtyFilter('All'); setShowFilters(false); }}>View All</button>
       </div>
       <div className="fd-specialties">
         {specialties.map((s) => (

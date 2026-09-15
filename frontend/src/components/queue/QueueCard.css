@@ -22,3 +22,35 @@
 .queue-card__token { font-size: 36px; font-weight: 800; color: var(--primary); line-height: 1; }
 .queue-card__current-num { font-size: 20px; font-weight: 700; color: var(--success); }
 .queue-card__ahead { font-size: 12px; color: var(--text-light); }
+
+.queue-card__left > button {
+  margin-top: 14px;
+  width: min(100%, 220px);
+  min-height: 44px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .queue-card {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .queue-card__right {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .queue-card__left > button { width: 100%; }
+}

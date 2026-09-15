@@ -63,7 +63,7 @@ function Home() {
 
   const recentActivity = allAppointments
     .filter((appointment) => appointment.status === 'COMPLETED')
-    .slice(0, 3)
+    .slice(0, 5)
     .map((appointment) => ({
       id: appointment.id,
       title: appointment.specialty || 'Completed appointment',

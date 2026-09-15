@@ -53,6 +53,30 @@
   filter: brightness(1.05);
 }
 
+.fd-filter-btn--active { background: #0b5c55; }
+
+.fd-filter-panel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #e4e8ea;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: -8px 0 18px;
+}
+
+.fd-filter-panel label { font-size: 13px; font-weight: 700; color: #475160; }
+.fd-filter-panel select {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #d1d9df;
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: #fff;
+  color: #16232b;
+}
+
 /* Recommendation card */
 .fd-recommendation {
   display: flex;

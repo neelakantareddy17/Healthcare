@@ -17,10 +17,10 @@
 }
 .doc-stat-card__num { font-size: 32px; font-weight: 800; }
 .doc-stat-card span:last-child { font-size: 13px; font-weight: 600; opacity: 0.85; }
-.doc-stat-card--blue { background: #e1f0f5; color: #0f4c5c; }
-.doc-stat-card--green { background: #e3f3ee; color: #176b5b; }
-.doc-stat-card--orange { background: #fff1dc; color: #a35416; }
-.doc-stat-card--purple { background: #e8edf5; color: #3b536f; }
+.doc-stat-card--blue { background: #e8eef1; color: #365766; }
+.doc-stat-card--green { background: #e7efec; color: #3b6258; }
+.doc-stat-card--orange { background: #f1eee7; color: #75654a; }
+.doc-stat-card--purple { background: #ececf0; color: #5d6170; }
 
 .section-title { font-size: 18px; font-weight: 800; margin-bottom: 14px; }
 
@@ -65,3 +65,27 @@
 .doc-appt-status--completed { background: #dcfce7; color: #15803d; }
 
 .empty-queue { text-align: center; padding: 30px; color: var(--text-light); font-size: 16px; }
+
+@media (max-width: 560px) {
+  .doc-dashboard-banner { border-radius: 18px; padding: 20px; }
+  .doc-dashboard-name { font-size: 21px; }
+  .queue-control {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 18px;
+  }
+  .queue-control__current,
+  .queue-control__next { min-width: 0; }
+  .queue-control__num { font-size: 34px; }
+  .queue-control__count { font-size: 17px; }
+  .queue-next-btn {
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 14px;
+    font-size: 15px;
+  }
+  .queue-control > .queue-next-btn:first-of-type { grid-column: 1; }
+  .queue-control > .queue-next-btn:last-child { grid-column: 2; }
+  .queue-control > .queue-next-btn:only-of-type { grid-column: 1 / -1; }
+}

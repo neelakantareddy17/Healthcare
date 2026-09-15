@@ -25,6 +25,7 @@ function BookAppointment() {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [notes, setNotes] = useState('');
+  const [bookingError, setBookingError] = useState('');
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -46,8 +47,12 @@ function BookAppointment() {
   };
 
   const handleBook = async () => {
-    if (!selectedDate || !selectedTime || selectedTimeIsPast) return alert('Please select a future date and time slot');
+    if (!selectedDate || !selectedTime || selectedTimeIsPast) {
+      setBookingError('Please select a future date and time slot.');
+      return;
+    }
     setBooking(true);
+    setBookingError('');
     try {
       const appointment = await bookAppointment({
         doctorId: doctor.id,
@@ -56,6 +61,8 @@ function BookAppointment() {
         reason: notes,
       });
       navigate('/patient/booking-success', { state: { appointment } });
+    } catch (error) {
+      setBookingError(error.response?.data?.message || 'This appointment could not be booked. Please choose another slot.');
     } finally {
       setBooking(false);
     }
@@ -127,6 +134,7 @@ function BookAppointment() {
         />
       </div>
 
+        {bookingError && <p className="book-error" role="alert">{bookingError}</p>}
           <Button title={booking ? 'Booking...' : `Book Appointment — ${formatINR(doctor?.fee)}`} onClick={handleBook} disabled={booking || !selectedDate || !selectedTime || selectedTimeIsPast} />
     </PatientLayout>
   );

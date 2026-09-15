@@ -11,7 +11,7 @@ import './Bookings.css';
 
 const statusFilters = ['All', 'Upcoming', 'Completed'];
 const ALL_MONTHS = 'All Months';
-const upcomingStatuses = ['PENDING', 'PAID'];
+const upcomingStatuses = ['PENDING', 'PAID', 'CHECKED_IN', 'IN_PROGRESS'];
 
 const getMonthLabel = (dateStr) => {
   const d = new Date(dateStr);
