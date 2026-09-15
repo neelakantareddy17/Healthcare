@@ -3,6 +3,7 @@ import app from './app.js';
 import { env } from './config/env.js';
 import { prisma } from './config/db.js';
 import { initSocket } from './socket/index.js';
+import { ensureDefaultDepartments } from './services/department.service.js';
 
 const httpServer = http.createServer(app);
 
@@ -11,6 +12,7 @@ initSocket(httpServer);
 const start = async () => {
   try {
     await prisma.$connect();
+    await ensureDefaultDepartments();
     // eslint-disable-next-line no-console
     console.log('✅ Connected to PostgreSQL database');
 

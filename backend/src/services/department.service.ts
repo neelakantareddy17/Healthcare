@@ -1,6 +1,27 @@
 import { prisma } from '../config/db.js';
 import { ApiError } from '../utils/ApiError.js';
 
+const defaultDepartments = [
+  { name: 'General Medicine', description: 'General physician consultations and checkups' },
+  { name: 'Cardiology', description: 'Heart and cardiovascular care' },
+  { name: 'Pediatrics', description: 'Medical care for infants, children, and adolescents' },
+  { name: 'Neurology', description: 'Diagnosis and treatment of nervous system conditions' },
+  { name: 'Orthopedics', description: 'Bone, joint, muscle, and mobility care' },
+  { name: 'Dermatology', description: 'Skin, hair, and nail care' },
+  { name: 'Gynecology', description: "Women's reproductive and wellness care" },
+  { name: 'ENT', description: 'Ear, nose, and throat care' },
+];
+
+export const ensureDefaultDepartments = async () => {
+  for (const department of defaultDepartments) {
+    await prisma.department.upsert({
+      where: { name: department.name },
+      update: {},
+      create: department,
+    });
+  }
+};
+
 export const createDepartment = async (data: { name: string; description?: string }) => {
   const existing = await prisma.department.findUnique({ where: { name: data.name } });
   if (existing) {
