@@ -27,6 +27,7 @@ function Doctors() {
   const [doctors, setDoctors] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [departmentsLoading, setDepartmentsLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState(null);
   const [form, setForm] = useState(emptyForm);
@@ -36,15 +37,18 @@ function Doctors() {
 
   const loadData = async () => {
     setLoading(true);
-    try {
-      const [doctorList, departmentList] = await Promise.all([getDoctors(), getDepartments()]);
-      setDoctors(doctorList);
-      setDepartments(departmentList);
-    } catch (error) {
-      setNotice({ type: 'error', text: getErrorMessage(error) });
-    } finally {
-      setLoading(false);
-    }
+    setDepartmentsLoading(true);
+
+    const doctorRequest = getDoctors()
+      .then(setDoctors)
+      .catch((error) => setNotice({ type: 'error', text: getErrorMessage(error) }))
+      .finally(() => setLoading(false));
+    const departmentRequest = getDepartments()
+      .then(setDepartments)
+      .catch((error) => setNotice({ type: 'error', text: `Departments could not be loaded: ${getErrorMessage(error)}` }))
+      .finally(() => setDepartmentsLoading(false));
+
+    await Promise.all([doctorRequest, departmentRequest]);
   };
 
   useEffect(() => { loadData(); }, []);
@@ -165,8 +169,8 @@ function Doctors() {
           </>}
           <Input label="Phone" name="phone" value={form.phone} onChange={updateField} placeholder="Phone number" />
           <label className="input-label">Department</label>
-          <select name="departmentId" value={form.departmentId} onChange={updateField} style={{ ...fieldStyle, marginBottom: 16 }} required>
-            <option value="">Select department</option>
+          <select name="departmentId" value={form.departmentId} onChange={updateField} style={{ ...fieldStyle, marginBottom: 16, cursor: 'pointer' }} required disabled={departmentsLoading}>
+            <option value="">{departmentsLoading ? 'Loading departments...' : departments.length ? 'Select department' : 'No departments available'}</option>
             {departments.map((department) => <option key={department.id} value={department.id}>{department.name}</option>)}
           </select>
           <Input label="Specialization" name="specialization" value={form.specialization} onChange={updateField} placeholder="e.g. Cardiology" required />

@@ -28,17 +28,31 @@ async function main() {
   }
 
   // ---------------------------------------------------------------------
-  // 2. Sample department
+  // 2. Departments
   // ---------------------------------------------------------------------
-  const department = await prisma.department.upsert({
+  const departments = [
+    { name: 'General Medicine', description: 'General physician consultations and checkups' },
+    { name: 'Cardiology', description: 'Heart and cardiovascular care' },
+    { name: 'Pediatrics', description: 'Medical care for infants, children, and adolescents' },
+    { name: 'Neurology', description: 'Diagnosis and treatment of nervous system conditions' },
+    { name: 'Orthopedics', description: 'Bone, joint, muscle, and mobility care' },
+    { name: 'Dermatology', description: 'Skin, hair, and nail care' },
+    { name: 'Gynecology', description: 'Women\'s reproductive and wellness care' },
+    { name: 'ENT', description: 'Ear, nose, and throat care' },
+  ];
+
+  for (const departmentData of departments) {
+    const department = await prisma.department.upsert({
+      where: { name: departmentData.name },
+      update: { description: departmentData.description },
+      create: departmentData,
+    });
+    console.log(`✅ Department ready -> ${department.name}`);
+  }
+
+  const department = await prisma.department.findUniqueOrThrow({
     where: { name: 'General Medicine' },
-    update: {},
-    create: {
-      name: 'General Medicine',
-      description: 'General physician consultations and checkups',
-    },
   });
-  console.log(`✅ Department ready -> ${department.name}`);
 
   // ---------------------------------------------------------------------
   // 3. Sample doctor account (normally created by an Admin via the API)
