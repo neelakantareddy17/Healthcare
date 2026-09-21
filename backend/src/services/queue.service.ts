@@ -3,6 +3,8 @@ import { ApiError } from '../utils/ApiError.js';
 import { startOfDay, endOfDay } from '../utils/date.js';
 import { broadcastPatientQueueUpdate, broadcastQueueUpdate } from '../socket/queue.socket.js';
 import { createNotification } from './notification.service.js';
+import { parseTimeSlotStart } from '../utils/date.js';
+import type { WaitTimePredictionInput } from './waitTime.service.js';
 
 /**
  * Creates a queue entry for a paid appointment.
@@ -154,6 +156,7 @@ export const updateQueueEntryStatus = async (
       },
       doctor: {
         include: {
+          department: true,
           user: {
             select: {
               id: true,
@@ -260,6 +263,7 @@ export const getQueueEntryById = async (
       },
       doctor: {
         include: {
+          department: true,
           user: {
             select: {
               id: true,
@@ -327,5 +331,45 @@ export const getQueueEntryById = async (
     ...entry,
     currentToken: currentEntry?.tokenNumber ?? 0,
     patientsAhead,
+  };
+};
+
+export const getWaitTimePredictionInput = async (
+  id: string,
+  requesterUserId: string,
+  role: 'PATIENT' | 'DOCTOR' | 'ADMIN',
+): Promise<WaitTimePredictionInput | null> => {
+  const entry = await getQueueEntryById(id, requesterUserId, role);
+  if (role !== 'PATIENT' || !('patientsAhead' in entry)) return null;
+
+  const activeEntries = await prisma.queueEntry.count({
+    where: {
+      doctorId: entry.doctorId,
+      date: entry.date,
+      status: { in: ['WAITING', 'IN_PROGRESS'] },
+    },
+  });
+  const slot = parseTimeSlotStart(entry.appointment.timeSlot);
+  const appointmentDate = entry.appointment.appointmentDate;
+  const dayOfWeek = appointmentDate.toLocaleDateString('en-US', {
+    weekday: 'long',
+    timeZone: 'UTC',
+  });
+
+  return {
+    doctor_id: entry.doctorId,
+    department: entry.doctor.department.name,
+    appointment_date: appointmentDate.toISOString().slice(0, 10),
+    appointment_hour: slot?.hours ?? 12,
+    day_of_week: dayOfWeek,
+    is_weekend: [0, 6].includes(appointmentDate.getUTCDay()) ? 1 : 0,
+    appointment_type: 'Regular',
+    patients_ahead: entry.patientsAhead,
+    queue_length: activeEntries,
+    current_token: entry.currentToken,
+    patient_token: entry.tokenNumber,
+    doctor_status: entry.currentToken > 0 ? 'Busy' : 'Available',
+    doctor_avg_consultation_time: 8,
+    check_in_delay_minutes: 0,
   };
 };

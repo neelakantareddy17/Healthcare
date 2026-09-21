@@ -9,6 +9,7 @@ import * as queueService from '../services/queue.service.js';
 import * as doctorService from '../services/doctor.service.js';
 
 import { ApiError } from '../utils/ApiError.js';
+import { predictWaitTime } from '../services/waitTime.service.js';
 
 export const getDoctorQueue = asyncHandler(
   async (req: Request, res: Response) => {
@@ -130,5 +131,25 @@ export const getQueueEntryById = asyncHandler(
       'Queue entry fetched',
       entry,
     );
+  },
+);
+
+export const getWaitTimePrediction = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) throw ApiError.badRequest('Queue entry ID is required');
+
+    const input = await queueService.getWaitTimePredictionInput(
+      id,
+      req.user!.userId,
+      req.user!.role,
+    );
+    const predictedWaitTime = input
+      ? await predictWaitTime(input)
+      : null;
+
+    return ApiResponse.ok(res, 'Wait time prediction fetched', {
+      predicted_wait_time_minutes: predictedWaitTime,
+    });
   },
 );

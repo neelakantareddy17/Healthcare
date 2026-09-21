@@ -174,6 +174,22 @@ npm run build
 npm run preview
 ```
 
+### Run the wait-time ML service
+
+The prototype model is kept separate from the Node backend. From the repository root:
+
+```bash
+cd ml
+python -m venv .venv
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python train_model.py
+python service.py
+```
+
+The training command prints MAE, RMSE, and R² and saves the model under `ml/artifacts/`. The backend calls `POST http://127.0.0.1:8000/predict` through `ML_SERVICE_URL`; if the ML service is unavailable, queue status continues to work without an estimate.
+
 ---
 
 ## Authentication

@@ -24,6 +24,7 @@ router.post(
   queueController.checkIn,
 );
 
+router.get('/:id/prediction', validate({ params: idParamSchema }), queueController.getWaitTimePrediction);
 router.get('/:id', validate({ params: idParamSchema }), queueController.getQueueEntryById);
 
 router.put(

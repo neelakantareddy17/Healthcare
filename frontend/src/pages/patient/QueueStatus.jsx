@@ -4,7 +4,7 @@ import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
 import { getPatientAppointments } from '../../services/appointment';
-import { getPatientQueue } from '../../services/queue';
+import { getPatientQueue, getWaitTimePrediction } from '../../services/queue';
 import { createQueueSocket } from '../../services/socket';
 import './QueueStatus.css';
 
@@ -19,6 +19,7 @@ function QueueStatus() {
   const { queueId } = useParams();
   const [queue, setQueue] = useState(null);
   const [doctor, setDoctor] = useState(null);
+  const [predictedWaitTime, setPredictedWaitTime] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -47,6 +48,13 @@ function QueueStatus() {
       }
 
       setQueue(entry);
+      getWaitTimePrediction(selectedQueueId)
+        .then((prediction) => {
+          if (active) setPredictedWaitTime(prediction);
+        })
+        .catch(() => {
+          if (active) setPredictedWaitTime(null);
+        });
       const doctorId = appointment?.doctorId || entry.doctorId;
       setDoctor(appointment ? {
         name: appointment.doctorName,
@@ -104,6 +112,13 @@ function QueueStatus() {
           <span className="qs-pill qs-pill--mint">Current: #{currentToken || '-'}</span>
         </div>
       </div>
+
+      {predictedWaitTime !== null && (
+        <div className="qs-wait-card" role="status">
+          <span>Estimated waiting time</span>
+          <strong>{predictedWaitTime} minutes</strong>
+        </div>
+      )}
 
       <div className="qs-doctor-card">
         <div className="qs-doctor-head">
