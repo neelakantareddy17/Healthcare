@@ -67,6 +67,7 @@ function Bookings() {
   const completedCount = appointments.filter((appointment) => appointment.status === 'COMPLETED').length;
 
   const handleCancel = async (id) => {
+    if (!window.confirm('Cancel this appointment? This cannot be undone.')) return;
     const updated = await cancelAppointment(id);
     setAppointments((prev) => prev.map((appointment) => (
       appointment.id === id ? { ...appointment, ...updated } : appointment
@@ -156,7 +157,7 @@ function Bookings() {
                 <AppointmentCard
                   key={appointment.id}
                   appointment={appointment}
-                  onCancel={upcomingStatuses.includes(appointment.status) ? handleCancel : undefined}
+                  onCancel={['PENDING', 'PAID'].includes(appointment.status) ? handleCancel : undefined}
                   onCheckIn={showCheckIn ? () => navigate('/patient/checkin', { state: { appointment } }) : undefined}
                 />
               );

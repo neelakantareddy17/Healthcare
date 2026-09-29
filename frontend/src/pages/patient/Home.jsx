@@ -11,6 +11,14 @@ import './Home.css';
 
 const UPCOMING_STATUSES = ['PENDING', 'PAID', 'CHECKED_IN', 'IN_PROGRESS'];
 
+const isToday = (dateValue) => {
+  const date = new Date(dateValue);
+  const today = new Date();
+  return date.getFullYear() === today.getFullYear()
+    && date.getMonth() === today.getMonth()
+    && date.getDate() === today.getDate();
+};
+
 const getAppointmentTimestamp = (appointment) => {
   const date = new Date(`${appointment.date}T00:00:00`);
   const time = parseTimeSlotStart(appointment.time);
@@ -39,7 +47,7 @@ function Home() {
           .filter((appointment) => UPCOMING_STATUSES.includes(appointment.status))
           .sort((a, b) => getAppointmentTimestamp(a) - getAppointmentTimestamp(b)));
         setQueue(appts
-          .filter((appointment) => appointment.queueEntry && UPCOMING_STATUSES.includes(appointment.status))
+          .filter((appointment) => appointment.queueEntry && isToday(appointment.date) && UPCOMING_STATUSES.includes(appointment.status))
           .map((appointment) => ({ ...appointment.queueEntry, doctorName: appointment.doctorName })));
       } finally {
         setLoading(false);
@@ -49,6 +57,7 @@ function Home() {
   }, [user]);
 
   const handleCancel = async (id) => {
+    if (!window.confirm('Cancel this appointment? This cannot be undone.')) return;
     await cancelAppointment(id);
     setAppointments((prev) => prev.filter((a) => a.id !== id));
   };
@@ -102,7 +111,7 @@ function Home() {
               <AppointmentCard
                 key={appointment.id}
                 appointment={appointment}
-                onCancel={handleCancel}
+                onCancel={['PENDING', 'PAID'].includes(appointment.status) ? handleCancel : undefined}
                 onCheckIn={appointment.status === 'PAID'
                   ? () => navigate('/patient/checkin', { state: { appointment } })
                   : undefined}

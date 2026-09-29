@@ -1,4 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { getNotifications } from '../services/notification';
 import './PatientLayout.css';
 
 const navItems = [
@@ -11,6 +13,9 @@ const navItems = [
   { to: '/patient/queue', label: 'Queue', icon: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h12M6 21h12M8 3c0 4 2 5.5 4 6.5m0 0c2 1 4 2.5 4 6.5M16 3c0 4-2 5.5-4 6.5m0 0-2 1-4 2.5-4 6.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
   ) },
+  { to: '/patient/chat', label: 'Chat', icon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 5h14v10H9l-4 4V5z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /><path d="M8 9h8M8 12h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+  ) },
   { to: '/patient/profile', label: 'Profile', icon: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" strokeWidth="1.6" /><path d="M5 20c1.4-3.6 4.4-5.6 7-5.6s5.6 2 7 5.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
   ) },
@@ -18,6 +23,13 @@ const navItems = [
 
 function PatientLayout({ children }) {
   const { pathname } = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    getNotifications()
+      .then((notifications) => setUnreadCount(notifications.filter((notification) => !notification.read).length))
+      .catch(() => setUnreadCount(0));
+  }, [pathname]);
   return (
     <div className="pl-shell">
       <header className="pl-header">
@@ -30,6 +42,7 @@ function PatientLayout({ children }) {
 
         <Link to="/patient/notifications" className="pl-icon-btn" aria-label="Notifications">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M6 10a6 6 0 1112 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /><path d="M10 20a2 2 0 004 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+          {unreadCount > 0 && <span className="pl-notification-count">{unreadCount > 99 ? '99+' : unreadCount}</span>}
         </Link>
       </header>
 

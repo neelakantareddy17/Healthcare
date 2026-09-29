@@ -38,6 +38,7 @@
 }
 
 .pl-icon-btn {
+  position: relative;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -98,4 +99,21 @@
 .pl-nav__item--active {
   color: #0d6e64;
   background: #d8f1eb;
+}
+
+.pl-notification-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #c2413f;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff;
 }

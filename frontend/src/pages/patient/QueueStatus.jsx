@@ -16,6 +16,14 @@ const statusLabels = {
   SKIPPED: 'Skipped',
 };
 
+const isToday = (dateValue) => {
+  const date = new Date(dateValue);
+  const today = new Date();
+  return date.getFullYear() === today.getFullYear()
+    && date.getMonth() === today.getMonth()
+    && date.getDate() === today.getDate();
+};
+
 function QueueStatus() {
   const { queueId } = useParams();
   const [queue, setQueue] = useState(null);
@@ -53,7 +61,7 @@ function QueueStatus() {
       const appointments = knownAppointments || await getPatientAppointments();
       const appointment = queueId
         ? appointments.find((item) => item.queueEntry?.id === queueId)
-        : appointments.find((item) => item.queueEntry && ['CHECKED_IN', 'IN_PROGRESS'].includes(item.status));
+        : appointments.find((item) => item.queueEntry && isToday(item.date) && ['CHECKED_IN', 'IN_PROGRESS'].includes(item.status));
       const selectedQueueId = queueId || appointment?.queueEntry?.id;
 
       if (!selectedQueueId) {

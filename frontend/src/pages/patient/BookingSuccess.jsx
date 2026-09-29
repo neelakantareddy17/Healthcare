@@ -5,6 +5,7 @@ import Button from '../../components/common/Button';
 import Icon from '../../components/common/Icon';
 import { getStoredPayment, payForAppointment } from '../../services/payment';
 import { formatINR } from '../../utils/currency';
+import { getApiErrorMessage } from '../../utils/apiError';
 import './BookingSuccess.css';
 
 function BookingSuccess() {
@@ -12,22 +13,25 @@ function BookingSuccess() {
   const navigate = useNavigate();
   const appt = state?.appointment;
   const [paymentMethod, setPaymentMethod] = useState('CARD');
+  const [cardNumber, setCardNumber] = useState('');
   const [payment, setPayment] = useState(() => getStoredPayment(appt?.id));
   const [paying, setPaying] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const qrSrc = payment?.qrCode || '';
   const amount = payment?.payment?.amount ?? appt?.fee;
   const paidMethod = payment?.payment?.method || paymentMethod;
-  const isPaid = Boolean(payment);
+  const isPaid = payment?.payment?.status === 'SUCCESS';
 
   const handlePayment = async () => {
     setPaying(true);
     setPaymentError('');
     try {
-      const result = await payForAppointment(appt.id, paymentMethod);
+      const result = await payForAppointment(appt.id, paymentMethod, {
+        ...(paymentMethod === 'CARD' ? { cardNumber: cardNumber.replace(/\s/g, '') } : {}),
+      });
       setPayment(result);
     } catch (error) {
-      setPaymentError(error.response?.data?.message || 'Payment could not be completed.');
+      setPaymentError(getApiErrorMessage(error, 'Payment could not be completed.'));
     } finally {
       setPaying(false);
     }
@@ -62,7 +66,7 @@ function BookingSuccess() {
               {[
                 ['CARD', 'Card', 'Pay securely by card'],
                 ['UPI', 'UPI', 'Google Pay, PhonePe and more'],
-                ['CASH', 'Cash', 'Pay at the clinic'],
+                ['CASH', 'COD', 'Pay at the clinic'],
                 ['WALLET', 'Wallet', 'Use your saved balance'],
               ].map(([value, label, description]) => (
                 <label key={value} className={`payment-option ${paymentMethod === value ? 'payment-option--active' : ''}`}>
@@ -71,10 +75,13 @@ function BookingSuccess() {
                 </label>
               ))}
             </div>
-            <Button title={paying ? 'Processing...' : `Pay ${formatINR(amount)}`} onClick={handlePayment} disabled={paying} />
+            {paymentMethod === 'CARD' && <input className="payment-input" inputMode="numeric" maxLength={19} placeholder="Card number" value={cardNumber} onChange={(event) => setCardNumber(event.target.value.replace(/[^\d ]/g, ''))} />}
+            <Button title={paying ? 'Processing...' : paymentMethod === 'CASH' ? 'Confirm Pay at Clinic' : `Pay ${formatINR(amount)}`} onClick={handlePayment} disabled={paying || (paymentMethod === 'CARD' && cardNumber.replace(/\s/g, '').length < 12)} />
             {paymentError && <p className="payment-error" role="alert">{paymentError}</p>}
           </div>
         )}
+
+        {!isPaid && payment?.pending && <p role="status" className="payment-pending">Pay at the clinic. Your appointment remains pending until payment is recorded.</p>}
 
         {isPaid && qrSrc && (
           <div className="success-qr">

@@ -1,7 +1,7 @@
 import api from './api';
 
-export const payForAppointment = async (appointmentId, method = 'CARD') => {
-  const response = await api.post(`/payments/${appointmentId}/pay`, { method });
+export const payForAppointment = async (appointmentId, method = 'CARD', details = {}) => {
+  const response = await api.post(`/payments/${appointmentId}/pay`, { method, ...details });
   const result = response.data.data;
   sessionStorage.setItem(`mediq_payment_${appointmentId}`, JSON.stringify(result));
   return result;

@@ -1,0 +1,12 @@
+.chat-page { display: grid; gap: 12px; }
+.chat-eyebrow { margin: 0; color: #0d6e64; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.chat-subtitle { margin: -4px 0 4px; color: #64748b; font-size: 14px; }
+.chat-prompts { display: flex; flex-wrap: wrap; gap: 8px; }
+.chat-prompts button { border: 1px solid #b8d8d2; border-radius: 999px; padding: 9px 12px; background: #f1faf8; color: #0d6e64; font-weight: 700; font-size: 12px; }
+.chat-thread { display: grid; gap: 10px; min-height: 280px; padding: 16px; background: #fff; border: 1px solid #e2ecea; border-radius: 18px; }
+.chat-bubble { max-width: 88%; margin: 0; padding: 11px 13px; border-radius: 14px; line-height: 1.5; font-size: 14px; }
+.chat-bubble--assistant { justify-self: start; background: #eef7f5; color: #23434a; }
+.chat-bubble--patient { justify-self: end; background: #0d6e64; color: #fff; }
+.chat-compose { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.chat-compose textarea { resize: vertical; border: 1px solid #cbd5e1; border-radius: 14px; padding: 12px; font: inherit; }
+.chat-compose button { align-self: end; border: 0; border-radius: 12px; padding: 12px 16px; background: #0d6e64; color: #fff; font-weight: 800; }

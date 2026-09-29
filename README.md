@@ -188,7 +188,7 @@ python train_model.py
 python service.py
 ```
 
-The training command prints MAE, RMSE, and R² and saves the model under `ml/artifacts/`. The backend calls `POST http://127.0.0.1:8000/predict` through `ML_SERVICE_URL`; if the ML service is unavailable, queue status continues to work without an estimate.
+The training command prints MAE, RMSE, and R² and saves the model under `ml/artifacts/`. The backend calls `POST http://127.0.0.1:18080/predict` through `ML_SERVICE_URL`; if the ML service is unavailable, queue status continues to work without an estimate. Set `ML_PORT` and `ML_SERVICE_URL` together if you need another port.
 
 ---
 

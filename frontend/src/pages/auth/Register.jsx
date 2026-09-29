@@ -23,7 +23,7 @@ const BACKEND_AVATAR_IDS = {
   av5: 'sunrise',
 };
 
-const isValidPhone = (v) => !v || /^\+?[\d\s\-().]{7,20}$/.test(v.trim());
+const isValidPhone = (v) => /^\+?[\d\s\-().]{7,20}$/.test(v.trim());
 
 // ── Multi-step config ─────────────────────────────────────────────────────────
 // Step 1 → account credentials (required)
@@ -88,14 +88,16 @@ function Register() {
       errors.email = 'Enter a valid email address.';
     }
 
-    if (form.phone && !isValidPhone(form.phone)) {
+    if (!form.phone.trim()) {
+      errors.phone = 'Phone number is required for appointment verification.';
+    } else if (!isValidPhone(form.phone)) {
       errors.phone = 'Enter a valid phone number (e.g. +91 98765 43210).';
     }
 
     if (!form.password) {
       errors.password = 'Password is required.';
-    } else if (form.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters.';
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(form.password)) {
+      errors.password = 'Use 8+ characters with uppercase, lowercase, number, and special character.';
     }
 
     if (!form.confirmPassword) {

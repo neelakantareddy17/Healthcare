@@ -1,4 +1,5 @@
 import json
+import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -43,5 +44,6 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    print("MediQ ML service running on http://127.0.0.1:8000")
-    ThreadingHTTPServer(("127.0.0.1", 8000), Handler).serve_forever()
+    port = int(os.getenv("ML_PORT", "18080"))
+    print(f"MediQ ML service running on http://127.0.0.1:{port}")
+    ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()

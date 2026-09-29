@@ -125,9 +125,6 @@ function Profile() {
       <div className="pf-header">
         <div
           className="pf-avatar-wrap"
-          onClick={() => navigate('/patient/profile/personal-information')}
-          style={{ cursor: 'pointer' }}
-          title="Click to change avatar in Personal Information"
         >
           <PatientAvatar avatarId={avatarId} name={displayName} size={88} showRing />
           <span className="pf-verified" aria-label="Verified account">
@@ -201,19 +198,6 @@ function Profile() {
         Logout
       </button>
 
-      <button
-        type="button"
-        className="pf-fab"
-        aria-label="Scan QR code"
-        onClick={() => navigate('/patient/qr-scanner')}
-      >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <rect x="4" y="4" width="7" height="7" rx="1.5" stroke="white" strokeWidth="1.6" />
-          <rect x="13" y="4" width="7" height="7" rx="1.5" stroke="white" strokeWidth="1.6" />
-          <rect x="4" y="13" width="7" height="7" rx="1.5" stroke="white" strokeWidth="1.6" />
-          <path d="M14 14h3v3h-3zM19 14v6M14 19h6" stroke="white" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-      </button>
     </PatientLayout>
   );
 }

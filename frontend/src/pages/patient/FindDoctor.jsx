@@ -19,6 +19,10 @@ const specialties = [
   { key: 'Neurology', label: 'Neurology', variant: 'blue', icon: (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 4a3 3 0 013 3v10a3 3 0 01-6 0V9a3 3 0 013-3zM15 4a3 3 0 00-3 3v10a3 3 0 006 0V9a3 3 0 00-3-3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
   ) },
+  { key: 'Pediatrics', label: 'Pediatrics', variant: 'blue', icon: <Icon name="users" size={22} /> },
+  { key: 'Orthopedics', label: 'Orthopedics', variant: 'teal', icon: <Icon name="activity" size={22} /> },
+  { key: 'Gynecology', label: 'Gynecology', variant: 'rose', icon: <Icon name="user" size={22} /> },
+  { key: 'General Medicine', label: 'General Medicine', variant: 'teal', icon: <Icon name="doctor" size={22} /> },
 ];
 
 function FindDoctor() {
@@ -81,7 +85,7 @@ function FindDoctor() {
         </div>
       )}
 
-      <div className="fd-recommendation">
+      <button type="button" className="fd-recommendation" onClick={() => { setQuery(''); setSpecialtyFilter('Cardiology'); setShowFilters(false); }}>
         <span className="fd-recommendation__icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 5.6L19 10l-5.2 1.4L12 17l-1.8-5.6L5 10l5.2-1.4L12 3z" fill="currentColor" /></svg>
         </span>
@@ -91,7 +95,7 @@ function FindDoctor() {
             Based on your recent heart rate data, you might want to consult a Cardiologist.
           </p>
         </div>
-      </div>
+      </button>
 
       <div className="fd-section-head">
         <h3 className="section-title">Specialists</h3>
@@ -103,7 +107,7 @@ function FindDoctor() {
             key={s.key}
             type="button"
             className="fd-specialty"
-            onClick={() => setQuery(s.key)}
+            onClick={() => { setQuery(''); setSpecialtyFilter(s.key); setShowFilters(false); }}
           >
             <span className={`fd-specialty__icon fd-specialty__icon--${s.variant}`}>{s.icon}</span>
             <span className="fd-specialty__label">{s.label}</span>
@@ -119,7 +123,7 @@ function FindDoctor() {
       ) : (
         <div className="fd-doctor-list">
           {filtered.map((doc) => (
-            <div key={doc.id} className="fd-doctor-card">
+            <div key={doc.id} className="fd-doctor-card" role="button" tabIndex={0} onClick={() => navigate(`/patient/doctor/${doc.id}`)} onKeyDown={(event) => { if (event.key === 'Enter') navigate(`/patient/doctor/${doc.id}`); }}>
               <div className="fd-doctor-photo-wrap">
                 {doc.photo ? (
                   <img src={doc.photo} alt={doc.name} className="fd-doctor-photo" />
@@ -149,7 +153,7 @@ function FindDoctor() {
                   <button
                     type="button"
                     className="fd-book-btn"
-                    onClick={() => navigate(`/patient/book/${doc.id}`)}
+                    onClick={(event) => { event.stopPropagation(); navigate(`/patient/book/${doc.id}`); }}
                   >
                     Book
                   </button>

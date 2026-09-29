@@ -19,6 +19,7 @@ import Notifications from '../pages/patient/Notifications';
 import Profile from '../pages/patient/Profile';
 import PersonalInformation from '../pages/patient/PersonalInformation';
 import Bookings from '../pages/patient/Bookings';
+import PatientChat from '../pages/patient/PatientChat';
 
 // Doctor
 import DoctorDashboard from '../pages/doctor/Dashboard';
@@ -54,6 +55,7 @@ function AppRoutes() {
       <Route path="/patient/queue" element={<RoleRoute role="patient"><QueueStatus /></RoleRoute>} />
       <Route path="/patient/medical-records" element={<RoleRoute role="patient"><MedicalRecords /></RoleRoute>} />
       <Route path="/patient/notifications" element={<RoleRoute role="patient"><Notifications /></RoleRoute>} />
+      <Route path="/patient/chat" element={<RoleRoute role="patient"><PatientChat /></RoleRoute>} />
       <Route path="/patient/profile" element={<RoleRoute role="patient"><Profile /></RoleRoute>} />
       <Route path="/patient/profile/personal-information" element={<RoleRoute role="patient"><PersonalInformation /></RoleRoute>} />
 

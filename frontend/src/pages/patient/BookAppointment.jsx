@@ -8,6 +8,7 @@ import { getDoctorById } from '../../services/doctor';
 import { bookAppointment } from '../../services/appointment';
 import { getLocalDateInputValue, isTimeSlotPast } from '../../utils/date';
 import { formatINR } from '../../utils/currency';
+import { getApiErrorMessage } from '../../utils/apiError';
 import './BookAppointment.css';
 
 const SLOT_GROUPS = [
@@ -62,7 +63,7 @@ function BookAppointment() {
       });
       navigate('/patient/booking-success', { state: { appointment } });
     } catch (error) {
-      setBookingError(error.response?.data?.message || 'This appointment could not be booked. Please choose another slot.');
+      setBookingError(getApiErrorMessage(error, 'This appointment could not be booked. Please choose another slot.'));
     } finally {
       setBooking(false);
     }

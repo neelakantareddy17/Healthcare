@@ -14,6 +14,10 @@ export const createAppointment = asyncHandler(
       req.user!.userId,
     );
 
+    if (!patient.user.phone?.trim()) {
+      throw ApiError.badRequest('Add a phone number to your profile before booking an appointment');
+    }
+
     const appointment = await appointmentService.createAppointment({
       patientId: patient.id,
       doctorId: req.body.doctorId,

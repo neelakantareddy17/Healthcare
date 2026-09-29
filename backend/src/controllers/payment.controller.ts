@@ -23,7 +23,11 @@ export const payForAppointment = asyncHandler(async (req: Request, res: Response
     req.body.method,
   );
 
-  return ApiResponse.ok(res, 'Payment successful, appointment confirmed', result);
+  return ApiResponse.ok(
+    res,
+    result.pending ? 'Payment deferred until the clinic visit' : 'Payment successful, appointment confirmed',
+    result,
+  );
 });
 
 export const getPaymentById = asyncHandler(async (req: Request, res: Response) => {

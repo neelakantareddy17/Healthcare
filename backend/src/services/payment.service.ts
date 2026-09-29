@@ -11,7 +11,10 @@ import type { PaymentMethod } from '@prisma/client';
  * and issues a queue token (only paid appointments receive tokens).
  * Returns a QR code (base64 data URL) encoding the appointment's check-in code.
  */
-export const payForAppointment = async (appointmentId: string, method: PaymentMethod) => {
+export const payForAppointment = async (
+  appointmentId: string,
+  method: PaymentMethod,
+) => {
   const appointment = await prisma.appointment.findUnique({
     where: { id: appointmentId },
     include: { doctor: true, patient: true, payment: true },
@@ -31,39 +34,47 @@ export const payForAppointment = async (appointmentId: string, method: PaymentMe
 
   const amount = appointment.doctor.consultationFee;
 
+  const isCashOnDelivery = method === 'CASH';
   const result = await prisma.$transaction(async (tx) => {
     const payment = await tx.payment.upsert({
       where: { appointmentId },
-      update: { status: 'SUCCESS', method, amount },
+      update: { status: isCashOnDelivery ? 'PENDING' : 'SUCCESS', method, amount },
       create: {
         appointmentId,
         amount,
         method,
-        status: 'SUCCESS',
+        status: isCashOnDelivery ? 'PENDING' : 'SUCCESS',
       },
     });
 
-    await tx.appointment.update({
-      where: { id: appointmentId },
-      data: { status: 'PAID' },
-    });
+    if (!isCashOnDelivery) {
+      await tx.appointment.update({
+        where: { id: appointmentId },
+        data: { status: 'PAID' },
+      });
+    }
 
     return payment;
   });
 
   
 
-  const qrCode = await generateQrCodeDataUrl(appointment.checkInCode);
+  const qrCode = isCashOnDelivery
+    ? null
+    : await generateQrCodeDataUrl(appointment.checkInCode);
 
-  await createNotification({
-    userId: appointment.patient.userId,
-    title: 'Payment successful',
-    message: 'Payment received. Your appointment is confirmed. Please check in during your selected check-in window.',
-  });
+  if (!isCashOnDelivery) {
+    await createNotification({
+      userId: appointment.patient.userId,
+      title: 'Payment successful',
+      message: 'Payment received. Your appointment is confirmed. Please check in during your selected check-in window.',
+    });
+  }
   return {
   payment: result,
   qrCode,
   checkInCode: appointment.checkInCode,
+  pending: isCashOnDelivery,
 };
 
  

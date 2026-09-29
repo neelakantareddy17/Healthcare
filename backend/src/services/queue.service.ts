@@ -278,6 +278,13 @@ export const getQueueEntryById = async (
     throw ApiError.notFound('Queue entry not found');
   }
 
+  if (
+    role === 'PATIENT' &&
+    startOfDay(entry.date).getTime() !== startOfDay(new Date()).getTime()
+  ) {
+    throw ApiError.notFound('This queue token is no longer active');
+  }
+
   // ADMIN can view any queue entry.
   if (role === 'ADMIN') {
     return entry;
