@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import PatientLayout from '../../layouts/PatientLayout';
 import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
+import Icon from '../../components/common/Icon';
 import { getPatientAppointments } from '../../services/appointment';
 import { getPatientQueue, getWaitTimePrediction } from '../../services/queue';
 import { createQueueSocket } from '../../services/socket';
@@ -20,12 +21,33 @@ function QueueStatus() {
   const [queue, setQueue] = useState(null);
   const [doctor, setDoctor] = useState(null);
   const [predictedWaitTime, setPredictedWaitTime] = useState(null);
+  const [predictionStatus, setPredictionStatus] = useState('loading');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     let active = true;
     let socket;
+    let predictionRequest = 0;
+
+    const refreshPrediction = async (selectedQueueId) => {
+      const requestId = ++predictionRequest;
+      setPredictionStatus('loading');
+      setPredictedWaitTime(null);
+
+      try {
+        const prediction = await getWaitTimePrediction(selectedQueueId);
+        if (active && requestId === predictionRequest) {
+          setPredictedWaitTime(prediction);
+          setPredictionStatus(prediction === null ? 'unavailable' : 'ready');
+        }
+      } catch {
+        if (active && requestId === predictionRequest) {
+          setPredictedWaitTime(null);
+          setPredictionStatus('unavailable');
+        }
+      }
+    };
 
     const loadQueue = async (knownAppointments) => {
       const appointments = knownAppointments || await getPatientAppointments();
@@ -35,7 +57,10 @@ function QueueStatus() {
       const selectedQueueId = queueId || appointment?.queueEntry?.id;
 
       if (!selectedQueueId) {
-        if (active) setQueue(null);
+        if (active) {
+          setQueue(null);
+          setPredictionStatus('unavailable');
+        }
         return;
       }
 
@@ -44,17 +69,11 @@ function QueueStatus() {
 
       if (['COMPLETED', 'SKIPPED'].includes(entry.status)) {
         setQueue(null);
+        setPredictionStatus('unavailable');
         return;
       }
 
       setQueue(entry);
-      getWaitTimePrediction(selectedQueueId)
-        .then((prediction) => {
-          if (active) setPredictedWaitTime(prediction);
-        })
-        .catch(() => {
-          if (active) setPredictedWaitTime(null);
-        });
       const doctorId = appointment?.doctorId || entry.doctorId;
       setDoctor(appointment ? {
         name: appointment.doctorName,
@@ -62,10 +81,16 @@ function QueueStatus() {
         id: doctorId,
       } : { name: 'Your doctor', specialty: 'Queue', id: doctorId });
 
-      if (doctorId && !socket) {
+      if (!socket) {
         socket = createQueueSocket();
-        socket.on('queue:update', () => loadQueue());
+        socket.on('queue:update', () => {
+          loadQueue().catch((requestError) => {
+            if (active) setError(requestError.response?.data?.message || 'Unable to load queue status.');
+          });
+        });
       }
+
+      await refreshPrediction(selectedQueueId);
     };
 
     loadQueue().catch((requestError) => {
@@ -113,12 +138,17 @@ function QueueStatus() {
         </div>
       </div>
 
-      {predictedWaitTime !== null && (
-        <div className="qs-wait-card" role="status">
-          <span>Estimated waiting time</span>
-          <strong>{predictedWaitTime} minutes</strong>
+      <div className="qs-wait-card" role="status">
+        <div className="qs-wait-card__label">
+          <Icon name="clock" size={18} />
+          <span>Estimated Waiting Time</span>
         </div>
-      )}
+        <strong>
+          {predictionStatus === 'loading' && 'Calculating...'}
+          {predictionStatus === 'ready' && `~ ${predictedWaitTime} min`}
+          {predictionStatus === 'unavailable' && 'Unavailable'}
+        </strong>
+      </div>
 
       <div className="qs-doctor-card">
         <div className="qs-doctor-head">

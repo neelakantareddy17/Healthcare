@@ -313,6 +313,16 @@
   font-size: 13px;
 }
 
+.qs-wait-card__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qs-wait-card__label svg {
+  flex-shrink: 0;
+}
+
 .qs-wait-card strong {
   color: #16232b;
   font-size: 17px;
