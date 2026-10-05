@@ -1,0 +1,9 @@
+tensorflow
+numpy
+opencv-python
+h5py
+scikit-learn
+matplotlib
+pandas
+imutils
+split-folders
