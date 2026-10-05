@@ -6,6 +6,7 @@ import Loader from '../../components/common/Loader';
 import Icon from '../../components/common/Icon';
 import AppointmentCard from '../../components/appointment/AppointmentCard';
 import { getPatientAppointments, cancelAppointment } from '../../services/appointment';
+import { getPatientQueue } from '../../services/queue';
 import { parseTimeSlotStart } from '../../utils/date';
 import './Home.css';
 
@@ -46,9 +47,17 @@ function Home() {
         setAppointments(appts
           .filter((appointment) => UPCOMING_STATUSES.includes(appointment.status))
           .sort((a, b) => getAppointmentTimestamp(a) - getAppointmentTimestamp(b)));
-        setQueue(appts
+        const queueAppointments = appts
           .filter((appointment) => appointment.queueEntry && isToday(appointment.date) && UPCOMING_STATUSES.includes(appointment.status))
-          .map((appointment) => ({ ...appointment.queueEntry, doctorName: appointment.doctorName })));
+          .map(async (appointment) => {
+            try {
+              const queueEntry = await getPatientQueue(appointment.queueEntry.id);
+              return { ...queueEntry, doctorName: appointment.doctorName };
+            } catch {
+              return null;
+            }
+          });
+        setQueue((await Promise.all(queueAppointments)).filter(Boolean));
       } finally {
         setLoading(false);
       }
@@ -130,13 +139,13 @@ function Home() {
       {activeQueue && (
         <div className="queue-banner">
           <div className="queue-banner__count">
-            {Math.max((activeQueue.tokenNumber || 0) - (activeQueue.currentToken || 0), 0)}
+            {activeQueue.patientsAhead || 0}
             <span className="queue-banner__dot" />
           </div>
           <div className="queue-banner__text">
             <p className="queue-banner__title">Live Queue Status</p>
             <p className="queue-banner__sub">
-              {Math.max((activeQueue.tokenNumber || 0) - (activeQueue.currentToken || 0), 0)} patients ahead of you
+              {activeQueue.patientsAhead || 0} patients ahead of you
             </p>
           </div>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="queue-banner__icon">

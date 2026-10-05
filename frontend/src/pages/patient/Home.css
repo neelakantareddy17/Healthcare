@@ -258,6 +258,17 @@
   border: 2px solid #fff;
 }
 
+@media (max-width: 560px) {
+  .home-intro { margin-bottom: 18px; }
+  .home-greeting { font-size: 23px; }
+  .home-status { font-size: 13px; }
+  .appt-card { padding: 16px; border-radius: 18px; }
+  .appt-doctor { font-size: 17px; }
+  .queue-banner { gap: 10px; padding: 14px; border-radius: 16px; }
+  .queue-banner__text { min-width: 0; }
+  .queue-banner__sub { overflow-wrap: anywhere; }
+}
+
 .queue-banner__text {
   flex: 1;
 }

@@ -60,6 +60,7 @@
   max-width: 480px;
   width: 100%;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 .pl-nav {
@@ -116,4 +117,11 @@
   display: grid;
   place-items: center;
   border: 2px solid #fff;
+}
+
+@media (max-width: 560px) {
+  .pl-header { padding: 12px 14px; }
+  .pl-content { padding: 16px 12px 104px; }
+  .pl-nav { width: calc(100% - 16px); border-radius: 18px; }
+  .pl-nav__item { padding: 7px 4px; font-size: 11px; }
 }
