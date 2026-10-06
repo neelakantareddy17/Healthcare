@@ -1,38 +1,61 @@
-.admin-banner {
-  background: linear-gradient(135deg, #0F172A, #1e293b);
-  border-radius: 24px; padding: 24px; color: #fff;
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 20px;
+.admin-dashboard__welcome {
+  margin-bottom: 24px;
 }
-.admin-greeting { font-size: 14px; opacity: 0.7; }
-.admin-title { font-size: 22px; font-weight: 800; margin: 4px 0; }
-.admin-subtitle { font-size: 13px; opacity: 0.7; }
 
-.admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .admin-stat {
-  border-radius: 18px; padding: 18px 14px;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  display: flex;
+  min-height: 112px;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
 }
-.admin-stat__icon { font-size: 28px; }
-.admin-stat__num { font-size: 28px; font-weight: 800; }
-.admin-stat__label { font-size: 12px; font-weight: 600; text-align: center; }
 
-.admin-section { font-size: 18px; font-weight: 800; margin-bottom: 14px; color: var(--text); }
-
-.activity-list { background: #fff; border-radius: 18px; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(0,0,0,0.05); }
-.activity-item {
-  display: flex; gap: 14px; align-items: flex-start;
-  padding: 14px 18px; border-bottom: 1px solid var(--border);
+.admin-stat__icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 12px;
+  background: #edf7f6;
+  color: var(--primary);
 }
-.activity-item:last-child { border-bottom: none; }
-.activity-time { font-size: 12px; color: var(--text-light); min-width: 64px; }
-.activity-action { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-.activity-user { font-size: 12px; color: var(--primary); }
 
-.health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.health-card { background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.health-bar-wrap { background: #f3f4f6; border-radius: 10px; height: 8px; margin-bottom: 8px; overflow: hidden; }
-.health-bar { height: 100%; background: var(--primary); border-radius: 10px; transition: width 1s ease; }
-.health-label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-.health-val { font-size: 18px; font-weight: 800; color: var(--primary); }
+.admin-stat__label {
+  margin: 0 0 7px;
+  color: #718187;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin-stat__value {
+  margin: 0;
+  color: #172f36;
+  font-size: 27px;
+  font-weight: 750;
+  letter-spacing: -0.5px;
+}
+
+@media (max-width: 900px) {
+  .admin-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 540px) {
+  .admin-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .admin-stat {
+    min-height: 96px;
+    padding: 16px;
+  }
+}

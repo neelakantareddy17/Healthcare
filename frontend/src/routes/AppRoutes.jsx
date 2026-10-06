@@ -30,7 +30,6 @@ import DoctorProfile from '../pages/doctor/DoctorProfile';
 
 // Admin
 import AdminDashboard from '../pages/admin/Dashboard';
-import AdminUsers from '../pages/admin/Users';
 import AdminDoctors from '../pages/admin/Doctors';
 import AdminPatients from '../pages/admin/Patients';
 import AdminReports from '../pages/admin/Reports';
@@ -68,7 +67,7 @@ function AppRoutes() {
 
       {/* Admin routes */}
       <Route path="/admin" element={<RoleRoute role="admin"><AdminDashboard /></RoleRoute>} />
-      <Route path="/admin/users" element={<RoleRoute role="admin"><AdminUsers /></RoleRoute>} />
+      <Route path="/admin/users" element={<RoleRoute role="admin"><Navigate to="/admin/patients" replace /></RoleRoute>} />
       <Route path="/admin/doctors" element={<RoleRoute role="admin"><AdminDoctors /></RoleRoute>} />
       <Route path="/admin/patients" element={<RoleRoute role="admin"><AdminPatients /></RoleRoute>} />
       <Route path="/admin/reports" element={<RoleRoute role="admin"><AdminReports /></RoleRoute>} />

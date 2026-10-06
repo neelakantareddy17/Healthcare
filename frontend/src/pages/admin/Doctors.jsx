@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import AdminLayout from '../../layouts/AdminLayout';
 import Loader from '../../components/common/Loader';
+import EmptyState from '../../components/common/EmptyState';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 import Icon from '../../components/common/Icon';
@@ -35,6 +36,7 @@ function Doctors() {
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState({ type: '', text: '' });
+  const [searchQuery, setSearchQuery] = useState('');
 
   const loadData = async () => {
     setLoading(true);
@@ -53,6 +55,19 @@ function Doctors() {
   };
 
   useEffect(() => { loadData(); }, []);
+
+  const filteredDoctors = useMemo(() => {
+    const term = searchQuery.trim().toLowerCase();
+    if (!term) return doctors;
+
+    return doctors.filter((doctor) => [
+      doctor.name,
+      doctor.specialty,
+      doctor.specialization,
+      doctor.department?.name,
+      doctor.hospital,
+    ].some((value) => String(value || '').toLowerCase().includes(term)));
+  }, [doctors, searchQuery]);
 
   const openCreate = () => {
     setEditingDoctor(null);
@@ -140,29 +155,73 @@ function Doctors() {
 
   return (
     <AdminLayout>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-        <h2 style={{ fontSize: 24, fontWeight: 800 }}>Manage Doctors</h2>
-        <Button title="Add Doctor" onClick={openCreate} style={{ width: 'auto', height: 44, padding: '0 16px', fontSize: 14, borderRadius: 13 }} />
-      </div>
-      {notice.text && <p style={{ padding: '12px 14px', borderRadius: 12, marginBottom: 16, background: notice.type === 'error' ? '#fee2e2' : '#dcfce7', color: notice.type === 'error' ? '#b91c1c' : '#166534', fontSize: 13, fontWeight: 600 }}>{notice.text}</p>}
-      {loading ? <Loader /> : doctors.map((d) => (
-        <div key={d.id} className="admin-doctor-card" style={{ background: '#fff', borderRadius: 18, padding: 16, marginBottom: 12, boxShadow: '0 4px 14px rgba(0,0,0,0.06)', display: 'flex', gap: 14, alignItems: 'center' }}>
-          <div style={{ width: 52, height: 52, borderRadius: 14, background: 'var(--primary-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 16, color: 'var(--primary)', flexShrink: 0 }}>
-            {getInitials(d.name)}
+      <section className="admin-page">
+        <div className="admin-page-header">
+          <div>
+            <h2 className="admin-page-title">Doctors</h2>
+            <p className="admin-page-subtitle">Manage your hospital&apos;s medical staff.</p>
           </div>
-          <div style={{ flex: 1 }}>
-            <p style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>{d.name}</p>
-            <p style={{ fontSize: 13, color: 'var(--primary)', fontWeight: 600, marginBottom: 2 }}>{d.specialty}</p>
-            <p style={{ fontSize: 12, color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: 4 }}><Icon name="doctor" size={13} /> {d.department?.name || d.hospital || 'General department'}</p>
-          </div>
-          <Badge label={d.available ? 'Active' : 'Inactive'} type={d.available ? 'success' : 'danger'} />
-          <div className="admin-doctor-actions">
-            <Button title="Edit" variant="ghost" onClick={() => openEdit(d)} style={{ width: 'auto', height: 36, padding: '0 10px', fontSize: 13 }} />
-            {d.available && <Button title="Deactivate" variant="ghost" onClick={() => handleDelete(d)} style={{ width: 'auto', height: 36, padding: '0 10px', fontSize: 13, color: '#dc2626' }} />}
-          </div>
+          <Button title="Add Doctor" onClick={openCreate} style={{ width: 'auto', height: 42, padding: '0 16px', fontSize: 13, borderRadius: 10 }} />
         </div>
-      ))}
-      {!loading && doctors.length === 0 && <p style={{ color: 'var(--text-light)', textAlign: 'center', padding: 32 }}>No doctors found.</p>}
+        {notice.text && <p className={`admin-feedback${notice.type === 'success' ? ' admin-feedback--success' : ''}`} role="status">{notice.text}</p>}
+        {loading ? <Loader /> : doctors.length === 0 ? (
+          <EmptyState icon="doctor" title="No doctors found" description="Add a doctor to start managing your medical staff." />
+        ) : (
+          <>
+            <label className="admin-doctors-search">
+              <Icon name="search" size={18} />
+              <input
+                type="text"
+                role="searchbox"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search doctors by name, specialization, or department..."
+                aria-label="Search doctors by name, specialization, or department"
+              />
+              {searchQuery && (
+                <button type="button" onClick={() => setSearchQuery('')} aria-label="Clear search">
+                  <Icon name="close" size={16} />
+                </button>
+              )}
+            </label>
+            {filteredDoctors.length ? (
+              <div className="admin-doctor-list">
+                {filteredDoctors.map((doctor) => {
+                  const hasFee = doctor.consultationFee !== null
+                    && doctor.consultationFee !== undefined
+                    && Number.isFinite(Number(doctor.consultationFee));
+
+                  return (
+                    <article key={doctor.id} className="admin-doctor-card admin-card">
+                      <div className="admin-doctor-card__identity">
+                        <div className="admin-doctor-card__avatar">{getInitials(doctor.name)}</div>
+                        <div className="admin-doctor-card__info">
+                          <h3>{doctor.name}</h3>
+                          <p className="admin-doctor-card__specialty">{doctor.specialty}</p>
+                          {(doctor.department?.name || doctor.hospital) && (
+                            <p className="admin-doctor-card__department"><Icon name="doctor" size={14} /> {doctor.department?.name || doctor.hospital}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="admin-doctor-card__meta">
+                        {hasFee && <p><span>Consultation fee</span><strong>₹{Number(doctor.consultationFee).toLocaleString('en-IN')}</strong></p>}
+                        {doctor.experienceYears !== null && doctor.experienceYears !== undefined && <p><span>Experience</span><strong>{doctor.experienceYears} years</strong></p>}
+                      </div>
+                      <Badge label={doctor.available ? 'Active' : 'Inactive'} type={doctor.available ? 'success' : 'danger'} />
+                      <div className="admin-doctor-actions">
+                        <Button title="Edit" variant="secondary" onClick={() => openEdit(doctor)} style={{ width: 'auto', height: 36, padding: '0 12px', borderWidth: 1, borderRadius: 8, fontSize: 12 }} />
+                        {doctor.available && <Button title="Deactivate" variant="ghost" onClick={() => handleDelete(doctor)} style={{ width: 'auto', height: 36, padding: '0 10px', borderRadius: 8, color: '#b42318', fontSize: 12 }} />}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <EmptyState icon="search" title="No doctors found" description="Try a different search." />
+            )}
+          </>
+        )}
+      </section>
       <Modal isOpen={modalOpen} onClose={() => !submitting && setModalOpen(false)} title={editingDoctor ? 'Edit Doctor' : 'Add Doctor'}>
         <form onSubmit={submitForm}>
           <Input label="Name" name="name" value={form.name} onChange={updateField} placeholder="Doctor name" required />
