@@ -18,10 +18,10 @@ function BottomNavigation({ role = 'patient' }) {
     { to: '/doctor/profile', icon: 'user', label: 'Profile' },
   ];
   const adminTabs = [
-    { to: '/admin', icon: 'activity', label: 'Dashboard' },
+    { to: '/admin', icon: 'home', label: 'Dashboard' },
     { to: '/admin/doctors', icon: 'doctor', label: 'Doctors' },
     { to: '/admin/patients', icon: 'users', label: 'Patients' },
-    { to: '/admin/reports', icon: 'clipboard', label: 'Reports' },
+    { to: '/admin/reports', icon: 'activity', label: 'Analytics' },
   ];
 
   const tabs = role === 'doctor' ? doctorTabs : role === 'admin' ? adminTabs : patientTabs;
