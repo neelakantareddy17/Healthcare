@@ -4,4 +4,11 @@ node_modules/
 .agents/
 .windsurf/
 dist/
-ml/artifacts/
+
+# Ignore ML artifacts except the trained model
+ml/artifacts/*
+!ml/artifacts/wait_time_model.joblib
+
+# Ignore Python generated files
+__pycache__/
+*.py[cod]

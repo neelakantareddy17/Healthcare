@@ -32,7 +32,9 @@ export const predictWaitTime = async (
     const result = (await response.json()) as {
       predicted_wait_time_minutes?: unknown;
     };
-    return typeof result.predicted_wait_time_minutes === 'number'
+    return typeof result.predicted_wait_time_minutes === 'number' &&
+      Number.isFinite(result.predicted_wait_time_minutes) &&
+      result.predicted_wait_time_minutes >= 0
       ? result.predicted_wait_time_minutes
       : null;
   } catch {
