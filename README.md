@@ -188,7 +188,7 @@ python train_model.py
 python service.py
 ```
 
-The training command prints MAE, RMSE, and R² and saves the model under `ml/artifacts/`. The service listens on `0.0.0.0` and uses Render's `PORT` variable, with `18080` as the local fallback. The backend calls `POST ${ML_SERVICE_URL}/predict`; if the ML service is unavailable, queue status continues to work without an estimate. For a separate deployment, set the backend's `ML_SERVICE_URL` to the deployed ML service URL and ensure the model artifact is available at `ml/artifacts/wait_time_model.joblib`.
+The training command prints MAE, RMSE, and R² and saves the model under `ml/artifacts/`. The service listens on `0.0.0.0` and uses Render's `PORT` variable, with `18080` as the local fallback. The backend calls `POST ${ML_SERVICE_URL}/predict`; if the ML service is unavailable, the prediction endpoint returns an error while other queue functionality continues to work. For a separate deployment, set the backend's production `ML_SERVICE_URL` environment variable to the deployed ML service base URL (without a `/predict` path) and ensure the model artifact is available at `ml/artifacts/wait_time_model.joblib`.
 
 ---
 

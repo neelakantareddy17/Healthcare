@@ -345,17 +345,48 @@ export const getWaitTimePredictionInput = async (
   id: string,
   requesterUserId: string,
   role: 'PATIENT' | 'DOCTOR' | 'ADMIN',
-): Promise<WaitTimePredictionInput | null> => {
+): Promise<WaitTimePredictionInput> => {
   const entry = await getQueueEntryById(id, requesterUserId, role);
-  if (role !== 'PATIENT' || !('patientsAhead' in entry)) return null;
 
-  const activeEntries = await prisma.queueEntry.count({
-    where: {
-      doctorId: entry.doctorId,
-      date: entry.date,
-      status: { in: ['WAITING', 'IN_PROGRESS'] },
-    },
-  });
+  const [currentEntry, patientsAhead, activeEntries] =
+    'patientsAhead' in entry
+      ? [
+          { tokenNumber: entry.currentToken },
+          entry.patientsAhead,
+          await prisma.queueEntry.count({
+            where: {
+              doctorId: entry.doctorId,
+              date: entry.date,
+              status: { in: ['WAITING', 'IN_PROGRESS'] },
+            },
+          }),
+        ]
+      : await Promise.all([
+          prisma.queueEntry.findFirst({
+            where: {
+              doctorId: entry.doctorId,
+              date: entry.date,
+              status: 'IN_PROGRESS',
+            },
+            orderBy: { tokenNumber: 'asc' },
+            select: { tokenNumber: true },
+          }),
+          prisma.queueEntry.count({
+            where: {
+              doctorId: entry.doctorId,
+              date: entry.date,
+              tokenNumber: { lt: entry.tokenNumber },
+              status: { in: ['WAITING', 'IN_PROGRESS'] },
+            },
+          }),
+          prisma.queueEntry.count({
+            where: {
+              doctorId: entry.doctorId,
+              date: entry.date,
+              status: { in: ['WAITING', 'IN_PROGRESS'] },
+            },
+          }),
+        ]);
   const slot = parseTimeSlotStart(entry.appointment.timeSlot);
   const appointmentDate = entry.appointment.appointmentDate;
   const dayOfWeek = appointmentDate.toLocaleDateString('en-US', {
@@ -371,11 +402,11 @@ export const getWaitTimePredictionInput = async (
     day_of_week: dayOfWeek,
     is_weekend: [0, 6].includes(appointmentDate.getUTCDay()) ? 1 : 0,
     appointment_type: 'Regular',
-    patients_ahead: entry.patientsAhead,
+    patients_ahead: patientsAhead,
     queue_length: activeEntries,
-    current_token: entry.currentToken,
+    current_token: currentEntry?.tokenNumber ?? 0,
     patient_token: entry.tokenNumber,
-    doctor_status: entry.currentToken > 0 ? 'Busy' : 'Available',
+    doctor_status: (currentEntry?.tokenNumber ?? 0) > 0 ? 'Busy' : 'Available',
     doctor_avg_consultation_time: 8,
     check_in_delay_minutes: 0,
   };

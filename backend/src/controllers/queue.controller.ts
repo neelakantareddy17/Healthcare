@@ -134,22 +134,39 @@ export const getQueueEntryById = asyncHandler(
   },
 );
 
+
 export const getWaitTimePrediction = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    if (!id) throw ApiError.badRequest('Queue entry ID is required');
+
+    if (!id) {
+      throw ApiError.badRequest('Queue entry ID is required');
+    }
+
+    console.info('[ML Controller] Prediction requested', {
+      queueEntryId: id,
+    });
 
     const input = await queueService.getWaitTimePredictionInput(
       id,
       req.user!.userId,
       req.user!.role,
     );
-    const predictedWaitTime = input
-      ? await predictWaitTime(input)
-      : null;
 
-    return ApiResponse.ok(res, 'Wait time prediction fetched', {
-      predicted_wait_time_minutes: predictedWaitTime,
+    console.info('[ML Controller] Input prepared', {
+      queueEntryId: id,
+      featureCount: Object.keys(input).length,
+      features: Object.keys(input),
     });
+
+    const predictedWaitTime = await predictWaitTime(input);
+
+    return ApiResponse.ok(
+      res,
+      'Wait time prediction fetched',
+      {
+        predicted_wait_time_minutes: predictedWaitTime,
+      },
+    );
   },
 );
