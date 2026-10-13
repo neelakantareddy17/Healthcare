@@ -48,7 +48,7 @@ function Login() {
               <path d="M15.3 18.2c0-1.3 1-2 2.2-2s2.2.7 2.2 2" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
             </svg>
           </div>
-          <span className="mq-brand-name">MediQ AI</span>
+          <span className="mq-brand-name">MedIQ</span>
         </div>
 
         <h1 className="mq-title">Welcome Back</h1>
@@ -128,7 +128,7 @@ function Login() {
         </p>
 
         <p className="mq-terms">
-          By logging in, you agree to MediQ AI's HIPAA-compliant terms of service and clinical privacy policy.
+          By logging in, you agree to MedIQ's HIPAA-compliant terms of service and clinical privacy policy.
         </p>
       </div>
     </div>

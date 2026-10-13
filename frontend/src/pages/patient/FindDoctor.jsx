@@ -90,7 +90,7 @@ function FindDoctor() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 5.6L19 10l-5.2 1.4L12 17l-1.8-5.6L5 10l5.2-1.4L12 3z" fill="currentColor" /></svg>
         </span>
         <div>
-          <p className="fd-recommendation__title">MediQ Recommendation</p>
+          <p className="fd-recommendation__title">MedIQ Recommendation</p>
           <p className="fd-recommendation__text">
             Based on your recent heart rate data, you might want to consult a Cardiologist.
           </p>

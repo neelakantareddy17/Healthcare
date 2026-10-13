@@ -37,7 +37,7 @@ function PatientLayout({ children }) {
           <span className="pl-brand__icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2.2" strokeLinecap="round" /></svg>
           </span>
-          MediQ AI
+          MedIQ
         </Link>
 
         <Link to="/patient/notifications" className="pl-icon-btn" aria-label="Notifications">

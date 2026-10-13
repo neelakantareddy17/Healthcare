@@ -1,5 +1,5 @@
 /**
- * MediQ AI — Patient Avatar System
+ * MedIQ — Patient Avatar System
  *
  * Backend limitation: the User and Patient Prisma models have no avatar field.
  * We persist the avatar identifier in localStorage keyed by userId so it
@@ -72,7 +72,7 @@ export const usePatientAvatar = (userId) => {
 
 // ── Avatar catalogue ─────────────────────────────────────────────────────────
 // Each entry is a pure-SVG illustration with an accessibility label.
-// Colours are drawn from the MediQ design palette.
+// Colours are drawn from the MedIQ design palette.
 
 export const AVATARS = [
   {

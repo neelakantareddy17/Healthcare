@@ -5,7 +5,7 @@ import './PatientChat.css';
 const replies = {
   symptom: 'Please describe when the symptoms started, how severe they are, and whether they are getting worse. For an emergency, contact the hospital directly.',
   navigation: 'Reception is on the ground floor. Diagnostics are on the first floor, and pharmacy is beside the main exit. Ask the front desk if you need an escort.',
-  hospital: 'MediQ Hospital is open Monday to Saturday from 8:00 AM to 8:00 PM. Carry your booking QR code and a valid phone number for verification.',
+  hospital: 'MedIQ Hospital is open Monday to Saturday from 8:00 AM to 8:00 PM. Carry your booking QR code and a valid phone number for verification.',
 };
 
 function PatientChat() {

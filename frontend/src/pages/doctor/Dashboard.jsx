@@ -15,6 +15,7 @@ function DoctorDashboard() {
   const [loading, setLoading] = useState(true);
   const [calling, setCalling] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const [queueActionError, setQueueActionError] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -30,10 +31,20 @@ function DoctorDashboard() {
   }, [user]);
 
   const handleCallNext = async () => {
+    if (calling || !queue.some((entry) => entry.status === 'WAITING')) return;
+
     setCalling(true);
-    const updated = await callNextToken({ date: getLocalDateInputValue() });
-    setQueue(updated);
-    setCalling(false);
+    setQueueActionError('');
+    try {
+      const updated = await callNextToken({ date: getLocalDateInputValue() });
+      setQueue(updated);
+    } catch (requestError) {
+      setQueueActionError(
+        requestError.response?.data?.message || 'Unable to call the next patient.',
+      );
+    } finally {
+      setCalling(false);
+    }
   };
 
   const handleComplete = async () => {
@@ -57,6 +68,7 @@ function DoctorDashboard() {
   const completed = appointments.filter((a) => a.status === 'COMPLETED').length;
   const inQueue = queue.filter((entry) => ['WAITING', 'IN_PROGRESS'].includes(entry.status)).length;
   const activeQueue = queue.filter((entry) => ['WAITING', 'IN_PROGRESS'].includes(entry.status));
+  const hasNextPatient = queue.some((entry) => entry.status === 'WAITING');
 
   return (
     <DoctorLayout>
@@ -102,8 +114,14 @@ function DoctorDashboard() {
               <p className="queue-control__label">In Queue</p>
               <p className="queue-control__count">{inQueue} patients</p>
             </div>
-            <button className="queue-next-btn" onClick={handleCallNext} disabled={calling}>
-              {calling ? '...' : 'Next ›'}
+            <button
+              className="queue-next-btn"
+              onClick={handleCallNext}
+              disabled={calling || !hasNextPatient}
+              aria-busy={calling}
+            >
+              <Icon name="arrowRight" size={19} strokeWidth={2.2} />
+              <span>{calling ? 'Calling...' : 'Call Next Patient'}</span>
             </button>
             {queue.some((entry) => entry.status === 'IN_PROGRESS') && (
               <button className="queue-next-btn" onClick={handleComplete} disabled={completing}>
@@ -111,6 +129,7 @@ function DoctorDashboard() {
               </button>
             )}
           </div>
+          {queueActionError && <p className="queue-control__error" role="alert">{queueActionError}</p>}
           <div className="queue-list">
             {activeQueue.map((q) => (
               <div key={q.id} className="queue-list-item">

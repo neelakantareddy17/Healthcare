@@ -33,12 +33,29 @@
 .queue-control__num { font-size: 40px; font-weight: 800; color: var(--primary); }
 .queue-control__count { font-size: 20px; font-weight: 700; color: var(--text); }
 .queue-next-btn {
-  background: var(--primary); color: #fff;
-  border: none; border-radius: 16px; padding: 14px 24px;
-  font-size: 18px; font-weight: 700; cursor: pointer; transition: var(--transition);
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  min-height: 50px; min-width: 190px;
+  background: #f2fbf9; color: #0b6b63;
+  border: 1px solid #b7e2db; border-radius: 14px; padding: 12px 18px;
+  font-size: 14px; font-weight: 800; cursor: pointer;
+  box-shadow: 0 5px 14px rgba(11, 107, 99, 0.1);
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
-.queue-next-btn:hover:not(:disabled) { background: var(--primary-dark); transform: scale(1.05); }
-.queue-next-btn:disabled { opacity: 0.6; }
+.queue-next-btn:hover:not(:disabled) {
+  background: #e5f6f2; border-color: #8dcec4;
+  box-shadow: 0 7px 17px rgba(11, 107, 99, 0.16);
+  transform: translateY(-1px);
+}
+.queue-next-btn:active:not(:disabled) { transform: translateY(1px); }
+.queue-next-btn:focus-visible {
+  outline: 3px solid rgba(11, 107, 99, 0.28);
+  outline-offset: 3px;
+}
+.queue-next-btn:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+.queue-control__error {
+  grid-column: 1 / -1; color: #b42318; font-size: 13px; font-weight: 600;
+  margin-top: -2px;
+}
 
 .queue-list { background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 8px; }
 .queue-list-item {

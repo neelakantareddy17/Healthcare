@@ -16,7 +16,7 @@ function Navbar({ title }) {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar__logo">MediQ<span>AI</span></Link>
+      <Link to="/" className="navbar__logo">MedIQ</Link>
       {title && <h2 className="navbar__title">{title}</h2>}
       <div className="navbar__actions">
         {user && (

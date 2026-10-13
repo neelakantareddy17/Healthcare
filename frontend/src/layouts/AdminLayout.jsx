@@ -38,7 +38,7 @@ function AdminLayout({ children }) {
         <NavLink to="/admin" className="admin-sidebar__brand">
           <span className="admin-sidebar__logo"><Icon name="logo" size={22} /></span>
           <span>
-            <span className="admin-sidebar__brand-name">MediQ <span>AI</span></span>
+            <span className="admin-sidebar__brand-name">MedIQ</span>
             <span className="admin-sidebar__brand-caption">Admin Portal</span>
           </span>
         </NavLink>
@@ -71,7 +71,7 @@ function AdminLayout({ children }) {
       <div className="admin-layout__main">
         <header className="admin-header">
           <div>
-            <p className="admin-header__eyebrow">MediQ AI</p>
+            <p className="admin-header__eyebrow">MedIQ</p>
             <h1 className="admin-header__title">Admin Portal</h1>
           </div>
           <div className="admin-header__profile">

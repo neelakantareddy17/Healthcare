@@ -1,4 +1,4 @@
-export const APP_NAME = 'MediQ AI';
+export const APP_NAME = 'MedIQ';
 
 export const ROLES = {
   PATIENT: 'patient',

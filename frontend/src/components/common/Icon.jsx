@@ -1,5 +1,6 @@
 import {
   Activity,
+  ArrowRight,
   Bell,
   CalendarDays,
   Check,
@@ -28,6 +29,7 @@ import {
 
 const icons = {
   activity: Activity,
+  arrowRight: ArrowRight,
   alert: Bell,
   appointment: CalendarDays,
   calendar: CalendarDays,

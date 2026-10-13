@@ -29,7 +29,6 @@ function QueueStatus() {
   const [queue, setQueue] = useState(null);
   const [doctor, setDoctor] = useState(null);
   const [predictedWaitTime, setPredictedWaitTime] = useState(null);
-  const [estimateSource, setEstimateSource] = useState(null);
   const [predictionStatus, setPredictionStatus] = useState('loading');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -43,15 +42,18 @@ function QueueStatus() {
       const requestId = ++predictionRequest;
       setPredictionStatus('loading');
       setPredictedWaitTime(null);
-      setEstimateSource(null);
 
       try {
         const estimate = await getWaitTimePrediction(selectedQueueId);
         if (active && requestId === predictionRequest) {
-          setPredictedWaitTime(estimate?.predicted_wait_time_minutes ?? null);
-          setEstimateSource(estimate?.estimate_source ?? null);
+          const waitTime = estimate?.predicted_wait_time_minutes;
+          const hasValidWaitTime = typeof waitTime === 'number'
+            && Number.isFinite(waitTime)
+            && waitTime >= 0;
+
+          setPredictedWaitTime(hasValidWaitTime ? waitTime : null);
           setPredictionStatus(
-            estimate?.predicted_wait_time_minutes == null
+            !hasValidWaitTime
               ? 'unavailable'
               : 'ready',
           );
@@ -59,7 +61,6 @@ function QueueStatus() {
       } catch {
         if (active && requestId === predictionRequest) {
           setPredictedWaitTime(null);
-          setEstimateSource(null);
           setPredictionStatus('unavailable');
         }
       }
@@ -161,14 +162,7 @@ function QueueStatus() {
         </div>
         <strong>
           {predictionStatus === 'loading' && 'Calculating...'}
-          {predictionStatus === 'ready' && (
-            <>
-              <span>~ {predictedWaitTime} min</span>
-              {estimateSource === 'fallback' && (
-                <small>Queue-based estimate</small>
-              )}
-            </>
-          )}
+          {predictionStatus === 'ready' && `${predictedWaitTime} min`}
           {predictionStatus === 'unavailable' && 'Unavailable'}
         </strong>
       </div>

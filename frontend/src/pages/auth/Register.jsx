@@ -215,7 +215,7 @@ function Register() {
             <path d="M15.3 18.2c0-1.3 1-2 2.2-2s2.2.7 2.2 2" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
           </svg>
         </div>
-        <h1 className="mq-page-brand">MediQ AI</h1>
+        <h1 className="mq-page-brand">MedIQ</h1>
         <p className="mq-page-tagline">Smart Healthcare Registration</p>
       </div>
 
@@ -252,7 +252,7 @@ function Register() {
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
               <PatientAvatar avatarId={selectedAvatar} name={form.name} size={72} showRing />
             </div>
-            <h2 className="reg-success-title">Welcome to MediQ, {form.name.trim().split(' ')[0]}!</h2>
+            <h2 className="reg-success-title">Welcome to MedIQ, {form.name.trim().split(' ')[0]}!</h2>
             <p className="reg-success-sub">Your account has been created with your chosen profile avatar. Redirecting to your dashboard…</p>
             <span className="reg-success-spinner" aria-label="Loading" />
           </div>
@@ -660,7 +660,7 @@ function Register() {
       )}
 
       <p className="mq-footer-note">
-        Secured by HIPAA-compliant encryption &copy; {new Date().getFullYear()} MediQ AI Solutions
+        Secured by HIPAA-compliant encryption &copy; {new Date().getFullYear()} MedIQ Solutions
       </p>
     </div>
   );
