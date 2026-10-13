@@ -38,7 +38,7 @@ export const getPatientQueue = async (queueId) => {
 export const getWaitTimePrediction = async (queueId) => {
   if (!queueId) return null;
   const response = await api.get(`/queue/${queueId}/prediction`);
-  return response.data.data?.predicted_wait_time_minutes ?? null;
+  return response.data.data ?? null;
 };
 
 export const getDoctorQueue = async (params = {}) => {

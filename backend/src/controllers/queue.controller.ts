@@ -159,13 +159,14 @@ export const getWaitTimePrediction = asyncHandler(
       features: Object.keys(input),
     });
 
-    const predictedWaitTime = await predictWaitTime(input);
+    const estimate = await predictWaitTime(input);
 
     return ApiResponse.ok(
       res,
-      'Wait time prediction fetched',
+      'Wait time estimate fetched',
       {
-        predicted_wait_time_minutes: predictedWaitTime,
+        predicted_wait_time_minutes: estimate.minutes,
+        estimate_source: estimate.source,
       },
     );
   },

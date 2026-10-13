@@ -22,6 +22,13 @@ interface WaitTimePredictionResponse {
   predicted_wait_time_minutes?: unknown;
 }
 
+export type EstimateSource = 'ml' | 'fallback';
+
+export interface WaitTimeEstimate {
+  minutes: number;
+  source: EstimateSource;
+}
+
 const isPredictionResponse = (
   value: unknown,
 ): value is WaitTimePredictionResponse =>
@@ -49,10 +56,9 @@ const getPredictionUrl = (): string => {
 
 export const predictWaitTime = async (
   input: WaitTimePredictionInput,
-): Promise<number> => {
-  const url = getPredictionUrl();
-
+): Promise<WaitTimeEstimate> => {
   try {
+    const url = getPredictionUrl();
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -65,7 +71,10 @@ export const predictWaitTime = async (
       console.error('[ML] Prediction request failed', {
         status: response.status,
       });
-      throw ApiError.internal('Wait-time prediction is currently unavailable');
+      return {
+        minutes: getFallbackEstimate(input),
+        source: 'fallback',
+      };
     }
 
     let parsedResponse: unknown;
@@ -73,12 +82,18 @@ export const predictWaitTime = async (
       parsedResponse = JSON.parse(responseBody) as unknown;
     } catch {
       console.error('[ML] Invalid JSON returned by prediction service');
-      throw ApiError.internal('Wait-time prediction is currently unavailable');
+      return {
+        minutes: getFallbackEstimate(input),
+        source: 'fallback',
+      };
     }
 
     if (!isPredictionResponse(parsedResponse)) {
       console.error('[ML] Invalid prediction response shape');
-      throw ApiError.internal('Wait-time prediction is currently unavailable');
+      return {
+        minutes: getFallbackEstimate(input),
+        source: 'fallback',
+      };
     }
 
     const result = parsedResponse;
@@ -89,21 +104,37 @@ export const predictWaitTime = async (
       prediction < 0
     ) {
       console.error('[ML] Invalid prediction response');
-      throw ApiError.internal('Wait-time prediction is currently unavailable');
+      return {
+        minutes: getFallbackEstimate(input),
+        source: 'fallback',
+      };
     }
 
-    return prediction;
+    return { minutes: prediction, source: 'ml' };
   } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-
     console.error('[ML] Prediction service connection failed', {
-      error:
-        error instanceof Error
-          ? `${error.name}: ${error.message}`
-          : String(error),
+      reason: error instanceof Error ? error.name : 'UnknownError',
     });
-    throw ApiError.internal('Wait-time prediction is currently unavailable');
+    return {
+      minutes: getFallbackEstimate(input),
+      source: 'fallback',
+    };
   }
+};
+
+const getFallbackEstimate = (input: WaitTimePredictionInput): number => {
+  const minutes = Math.max(
+    0,
+    Math.round(
+      input.patients_ahead * input.doctor_avg_consultation_time,
+    ),
+  );
+
+  console.info('[ML] Using queue-based fallback estimate', {
+    patientsAhead: input.patients_ahead,
+    averageConsultationMinutes: input.doctor_avg_consultation_time,
+    estimatedMinutes: minutes,
+  });
+
+  return minutes;
 };

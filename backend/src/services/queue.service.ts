@@ -5,6 +5,7 @@ import { broadcastPatientQueueUpdate, broadcastQueueUpdate } from '../socket/que
 import { createNotification } from './notification.service.js';
 import { parseTimeSlotStart } from '../utils/date.js';
 import type { WaitTimePredictionInput } from './waitTime.service.js';
+import { env } from '../config/env.js';
 
 /**
  * Creates a queue entry for a paid appointment.
@@ -407,7 +408,7 @@ export const getWaitTimePredictionInput = async (
     current_token: currentEntry?.tokenNumber ?? 0,
     patient_token: entry.tokenNumber,
     doctor_status: (currentEntry?.tokenNumber ?? 0) > 0 ? 'Busy' : 'Available',
-    doctor_avg_consultation_time: 8,
+    doctor_avg_consultation_time: env.averageConsultationMinutes,
     check_in_delay_minutes: 0,
   };
 };

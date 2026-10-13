@@ -29,6 +29,7 @@ function QueueStatus() {
   const [queue, setQueue] = useState(null);
   const [doctor, setDoctor] = useState(null);
   const [predictedWaitTime, setPredictedWaitTime] = useState(null);
+  const [estimateSource, setEstimateSource] = useState(null);
   const [predictionStatus, setPredictionStatus] = useState('loading');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -42,16 +43,23 @@ function QueueStatus() {
       const requestId = ++predictionRequest;
       setPredictionStatus('loading');
       setPredictedWaitTime(null);
+      setEstimateSource(null);
 
       try {
-        const prediction = await getWaitTimePrediction(selectedQueueId);
+        const estimate = await getWaitTimePrediction(selectedQueueId);
         if (active && requestId === predictionRequest) {
-          setPredictedWaitTime(prediction);
-          setPredictionStatus(prediction === null ? 'unavailable' : 'ready');
+          setPredictedWaitTime(estimate?.predicted_wait_time_minutes ?? null);
+          setEstimateSource(estimate?.estimate_source ?? null);
+          setPredictionStatus(
+            estimate?.predicted_wait_time_minutes == null
+              ? 'unavailable'
+              : 'ready',
+          );
         }
       } catch {
         if (active && requestId === predictionRequest) {
           setPredictedWaitTime(null);
+          setEstimateSource(null);
           setPredictionStatus('unavailable');
         }
       }
@@ -153,7 +161,14 @@ function QueueStatus() {
         </div>
         <strong>
           {predictionStatus === 'loading' && 'Calculating...'}
-          {predictionStatus === 'ready' && `~ ${predictedWaitTime} min`}
+          {predictionStatus === 'ready' && (
+            <>
+              <span>~ {predictedWaitTime} min</span>
+              {estimateSource === 'fallback' && (
+                <small>Queue-based estimate</small>
+              )}
+            </>
+          )}
           {predictionStatus === 'unavailable' && 'Unavailable'}
         </strong>
       </div>
